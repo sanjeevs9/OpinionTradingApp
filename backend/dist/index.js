@@ -11,7 +11,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const app = express();
+const redis_1 = require("redis");
+const client = (0, redis_1.createClient)();
 app.use(express.json());
+function start() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield client.connect();
+            app.listen(3000, () => {
+                console.log("backend connected");
+            });
+            console.log("redis connected");
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+}
+start();
+app.post("/submit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const name = req.body.name;
+    const age = req.body.age;
+    try {
+        yield client.lPush("submission", JSON.stringify({ name, age }));
+        res.json({
+            message: "redis queue added"
+        });
+    }
+    catch (error) {
+        res.json({
+            message: "redis queue not added"
+        });
+    }
+}));
 function uniqueID() {
     const num = [1, 2, 3, 4, 5];
     let id = "";
@@ -261,7 +293,4 @@ app.get("/", function (req, res) {
     return res.json({
         message: "sanjeev"
     });
-});
-app.listen(3000, () => {
-    console.log("backend connected");
 });

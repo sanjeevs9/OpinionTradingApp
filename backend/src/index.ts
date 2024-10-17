@@ -1,8 +1,39 @@
 const express =require("express");
 const app=express();
 import { Request,Response } from "express";
+import { createClient } from "redis";
 
+const client=createClient();
 app.use(express.json());
+
+async function start(){
+    try{
+        await client.connect();
+        app.listen(3000,()=>{
+            console.log("backend connected");
+        });
+        console.log("redis connected")
+    }catch(err){
+        console.log(err);
+    }
+}
+start()
+app.post("/submit",async (req:Request,res:Response)=>{
+    const name=req.body.name;
+    const age=req.body.age;
+
+    try{
+        await client.lPush("submission",JSON.stringify({name,age}))
+        res.json({
+            message:"redis queue added"
+        })
+    }catch(error){
+        res.json({
+            message:"redis queue not added"
+        })
+    }
+})
+
 
 interface user{
     balance:number,
@@ -344,6 +375,3 @@ app.get("/",function(req:Request,res:Response){
     })
 });
 
-app.listen(3000,()=>{
-    console.log("backend connected");
-});
