@@ -1,8 +1,8 @@
 const express =require("express");
 const app=express();
 import { Request,Response } from "express";
-import { createClient } from "redis";
-import { convertTypeAcquisitionFromJson, NumericLiteral, OrganizeImportsMode } from "typescript";
+import {createClient} from "redis";
+
 
 const client=createClient();
 app.use(express.json());
@@ -23,9 +23,9 @@ start()
 app.post("/submit",async (req:Request,res:Response)=>{
     const name=req.body.name;
     const age=req.body.age;
-
     try{
-        await client.lPush("submission",JSON.stringify({name,age}))
+        await client.lPush("change",JSON.stringify({stockSymbol:"stock",orderbook:{"dfadsfdf":"fsfdf"}}));
+
         res.json({
             message:"redis queue added"
         })
@@ -52,6 +52,11 @@ interface inr_balance{
 //         no:number
 //     }
 // }
+
+interface publish{
+    stock:string,
+    orderbook:object
+}
 
 interface stock_balance{
     [userid:string]:{
@@ -258,7 +263,8 @@ app.post("/order/buy",async (req:Request,res:Response)=>{
     }
   try{
      await buy(userId,stockSymbol,quantity,price,stockType);
-     console.log(ORDERBOOK);
+ 
+     await client.lPush("change",JSON.stringify({stockSymbol:stockSymbol,orderbook:ORDERBOOK[stockSymbol]}));
     return res.json({
         ORDERBOOK
     })
@@ -276,6 +282,7 @@ app.post("/order/buy",async (req:Request,res:Response)=>{
     const quantity:number=value.quantity;
     const price:number=value.price;
     const stockType: "yes" | "no" =value.stockType;
+    await client.lPush("change",JSON.stringify({stockSymbol:stockSymbol,orderbook:ORDERBOOK[stockSymbol]}));
 
      await sell(userId,stockSymbol,quantity,price,stockType);
         return res.json({
