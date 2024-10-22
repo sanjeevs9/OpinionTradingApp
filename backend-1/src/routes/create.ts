@@ -3,6 +3,7 @@ import { inr_balance, Orderbook, stock_balance } from "../schema";
 import { buy } from "../Purchase";
 import { sell } from "../sell";
 const router =express.Router();
+import { client } from "../redis";
 export default router
 //create user
 router.post("/user/create/:userId",(req:Request,res:Response):any=>{
@@ -54,7 +55,7 @@ router.post("/onramp/inr",(req:Request,res:Response)=>{
 })
 
 //buy order place
-router.post("/order/buy",(req:Request,res:Response)=>{
+router.post("/order/buy",async (req:Request,res:Response)=>{
     const value=req.body;
 
     const userId:string=value.userId;
@@ -76,13 +77,15 @@ router.post("/order/buy",(req:Request,res:Response)=>{
         return
     }
     const message=buy(userId,stockSymbol,quantity,price,stockType);
+    await client.lPush("change",JSON.stringify({stockSymbol:stockSymbol,orderbook:Orderbook[stockSymbol]}));
+
     res.json({
         message:message
     })
     return;
 })
 
-router.post("/order/sell",(req:Request,res:Response)=>{
+router.post("/order/sell",async (req:Request,res:Response)=>{
     const value=req.body;
 
     const userId:string=value.userId;
@@ -104,6 +107,8 @@ router.post("/order/sell",(req:Request,res:Response)=>{
         return
     }
     const message=sell(userId,stockSymbol,quantity,price,stockType);
+    await client.lPush("change",JSON.stringify({stockSymbol:stockSymbol,orderbook:Orderbook[stockSymbol]}));
+
     res.json({
         message:message
     })

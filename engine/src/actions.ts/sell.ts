@@ -1,6 +1,6 @@
 import { createOrder } from "./purchase";
-import { Orderbook, stock_balance, stockType } from "./schema";
-import { inr_balance } from "./schema";
+import { Orderbook, stock_balance, stockType } from "../schema";
+import { inr_balance } from "../schema";
 
 export function sell(userId: string, stockSymbol: string, quantity: number, price: number, stockType: stockType){
     let message="your stocks are sold"
@@ -9,6 +9,12 @@ export function sell(userId: string, stockSymbol: string, quantity: number, pric
     
     const obj=Orderbook[stockSymbol][altType];
     const keys=Object.keys(obj);
+    
+    
+    if(!stock_balance[userId][stockSymbol] || !stock_balance[userId][stockSymbol][stockType] || stock_balance[userId][stockSymbol][stockType].quantity<quantity){
+        message="you dont have enough stocks"
+        return message
+    }
 
     //no sell order directly no alt buy order present
     if(keys.length===0){

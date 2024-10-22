@@ -9,18 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = void 0;
-exports.default = start;
+exports.start = start;
 const redis_1 = require("redis");
-exports.client = (0, redis_1.createClient)();
+const client = (0, redis_1.createClient)();
+exports.default = client;
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield exports.client.connect();
-            console.log("redis is connected on default port");
+            yield client.connect();
+            console.log("redis connected");
         }
-        catch (error) {
-            console.log(error);
+        catch (err) {
+            console.log(err);
         }
     });
 }

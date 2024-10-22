@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,6 +17,7 @@ const schema_1 = require("../schema");
 const Purchase_1 = require("../Purchase");
 const sell_1 = require("../sell");
 const router = express_1.default.Router();
+const redis_1 = require("../redis");
 exports.default = router;
 //create user
 router.post("/user/create/:userId", (req, res) => {
@@ -54,7 +64,7 @@ router.post("/onramp/inr", (req, res) => {
     return;
 });
 //buy order place
-router.post("/order/buy", (req, res) => {
+router.post("/order/buy", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const value = req.body;
     const userId = value.userId;
     const stockSymbol = value.stockSymbol;
@@ -74,12 +84,13 @@ router.post("/order/buy", (req, res) => {
         return;
     }
     const message = (0, Purchase_1.buy)(userId, stockSymbol, quantity, price, stockType);
+    yield redis_1.client.lPush("change", JSON.stringify({ stockSymbol: stockSymbol, orderbook: schema_1.Orderbook[stockSymbol] }));
     res.json({
         message: message
     });
     return;
-});
-router.post("/order/sell", (req, res) => {
+}));
+router.post("/order/sell", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const value = req.body;
     const userId = value.userId;
     const stockSymbol = value.stockSymbol;
@@ -99,8 +110,9 @@ router.post("/order/sell", (req, res) => {
         return;
     }
     const message = (0, sell_1.sell)(userId, stockSymbol, quantity, price, stockType);
+    yield redis_1.client.lPush("change", JSON.stringify({ stockSymbol: stockSymbol, orderbook: schema_1.Orderbook[stockSymbol] }));
     res.json({
         message: message
     });
     return;
-});
+}));

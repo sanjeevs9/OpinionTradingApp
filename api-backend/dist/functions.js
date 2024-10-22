@@ -9,18 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = void 0;
-exports.default = start;
-const redis_1 = require("redis");
-exports.client = (0, redis_1.createClient)();
-function start() {
+exports.generate = generate;
+exports.queue = queue;
+const start_1 = require("./redis.ts/start");
+function generate() {
+    let num = "";
+    const alpha = "ABCDEFGHIJKLMNOPQRSTUVQXYZ";
+    for (let i = 0; i < 5; i++) {
+        const n = Math.floor(Math.random() * 10);
+        num += n;
+        const char = alpha.charAt(Math.floor(Math.random() * alpha.length));
+        num += char;
+    }
+    return num;
+}
+function queue(endpoint, data, id) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield exports.client.connect();
-            console.log("redis is connected on default port");
-        }
-        catch (error) {
-            console.log(error);
-        }
+        const message = {
+            endpoint: endpoint,
+            data: data,
+            id: id
+        };
+        console.log(endpoint);
+        yield start_1.client.lPush("endpoint", JSON.stringify(message));
     });
 }

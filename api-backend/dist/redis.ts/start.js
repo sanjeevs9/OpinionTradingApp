@@ -9,18 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = void 0;
-exports.default = start;
+exports.subscriber = exports.publisher = exports.client = void 0;
+exports.start = start;
 const redis_1 = require("redis");
 exports.client = (0, redis_1.createClient)();
+exports.publisher = (0, redis_1.createClient)();
+exports.subscriber = (0, redis_1.createClient)();
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             yield exports.client.connect();
-            console.log("redis is connected on default port");
+            yield exports.subscriber.connect();
+            yield exports.publisher.connect();
+            console.log("redis connected");
         }
-        catch (error) {
-            console.log(error);
+        catch (err) {
+            console.log(err);
         }
     });
 }
+// import redis from 'ioredis';
+// export const redisPub = new Redis();
+// export const redisSub = new Redis();
+// export const redisQueue = new Redis();
+// redisQueue.
