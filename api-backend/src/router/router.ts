@@ -45,16 +45,20 @@ router.get("/balance/inr/:userId",async (req:Request,res:Response)=>{
     const data={
         userId:userId
     }
-    queue("/balance/inr/:userId",data,id);
+    console.log(data);
+
     await subscriber.subscribe(id,(message:any)=>{
 
         const value=JSON.parse(message);
+        console.log(value);
         
         res.json({
             message:value
         })
         return 
     });
+    queue("/balance/inr/:userId",data,id);
+    
 })
 
 router.get("/balance/stock/:userId",async (req:Request,res:Response)=>{

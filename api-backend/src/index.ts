@@ -11,6 +11,7 @@ start()
 app.use("/",router);
 app.use("/",post);
 
+
 app.listen(PORT,()=>{
     console.log(`backend connected on ${PORT}`);
 })

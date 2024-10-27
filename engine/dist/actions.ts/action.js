@@ -38,6 +38,11 @@ function getBalance(id, data) {
 }
 function getStock(id, data) {
     const userId = data.userId;
+    if (!schema_1.inr_balance[userId]) {
+        const message = "user not found";
+        (0, publihser_1.default)(id, JSON.stringify(message));
+        return;
+    }
     if (!schema_1.stock_balance[userId]) {
         const message = "User has no stocks";
         (0, publihser_1.default)(id, JSON.stringify(message));
@@ -71,6 +76,11 @@ function reset(id) {
 }
 function createUser(id, data) {
     const userId = data.userId;
+    if (schema_1.inr_balance[userId]) {
+        const message = "user already exists";
+        (0, publihser_1.default)(id, JSON.stringify(message));
+        return;
+    }
     const user = {
         balance: 0,
         locked: 0
@@ -82,6 +92,11 @@ function createUser(id, data) {
 }
 function createStock(id, data) {
     const stockSymbol = data.stockSymbol;
+    if (schema_1.Orderbook[stockSymbol]) {
+        const message = "stock already exists";
+        (0, publihser_1.default)(id, JSON.stringify(message));
+        return;
+    }
     schema_1.Orderbook[stockSymbol] = {
         "yes": {},
         "no": {}

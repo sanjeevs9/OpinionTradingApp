@@ -11,6 +11,12 @@ function buy(userId, stockSymbol, quantity, price, stockType) {
         const altPrice = 1000 - price;
         const obj = schema_1.Orderbook[stockSymbol][stockType];
         const keys = Object.keys(obj);
+        //handle if user has no sufficient balance
+        const orderPrice = quantity * price;
+        if (schema_1.inr_balance[userId] && schema_1.inr_balance[userId].balance < orderPrice) {
+            message = "not enough balance";
+            return message;
+        }
         //no price for that "yes" / "no" type of stock
         if (keys.length === 0) {
             schema_1.inr_balance[userId].locked += (price * quantity);
@@ -37,7 +43,7 @@ function buy(userId, stockSymbol, quantity, price, stockType) {
             }
             if (value <= price && remainingQuantity != 0) {
                 // let total=obj[value].total;
-                const orders = obj[value].orders;
+                const orders = schema_1.Orderbook[stockSymbol][stockType][value].orders;
                 while (orders.length != 0) {
                     const Seller = orders[0].user;
                     const SellerType = orders[0].type;
@@ -45,37 +51,6 @@ function buy(userId, stockSymbol, quantity, price, stockType) {
                     if (sellerQuantity >= remainingQuantity) {
                         //place transaction
                         transaction(userId, Seller, SellerType, remainingQuantity, value, stockType, stockSymbol, altType);
-                        // Orderbook[stockSymbol][stockType][value].total -= remainingQuantity;
-                        // Orderbook[stockSymbol][stockType][value].orders[0].quantity -= remainingQuantity;
-                        // if (Orderbook[stockSymbol][stockType][value].orders[0].type === "buy") {
-                        //     //seller case
-                        //     const lockedMoney: number = (1000 - value) * remainingQuantity;
-                        //     inr_balance["probo"].balance += lockedMoney;
-                        //     inr_balance[Seller].locked -= lockedMoney;
-                        //     stock_balance[Seller][stockSymbol][altType].quantity += remainingQuantity;
-                        //     if (!stock_balance[Seller][stockSymbol]) {
-                        //         stock_balance[Seller][stockSymbol] = {
-                        //             "yes": {
-                        //                 quantity: 0,
-                        //                 locked: 0
-                        //             },
-                        //             "no": {
-                        //                 quantity: 0,
-                        //                 locked: 0
-                        //             }
-                        //         }
-                        //     }
-                        //     //buyer case
-                        //     stock_balance[userId][stockSymbol][stockType].quantity += remainingQuantity;
-                        //     inr_balance[userId].balance -= value * remainingQuantity;
-                        // } else {
-                        //     //seller case
-                        //     stock_balance[Seller][stockSymbol][stockType].locked -= remainingQuantity;
-                        //     inr_balance[Seller].balance += value * remainingQuantity;
-                        //     //buyer case
-                        //     stock_balance[userId][stockSymbol][stockType].quantity += remainingQuantity;
-                        //     inr_balance[userId].balance -= value * remainingQuantity;
-                        // }
                         if (orders[0].quantity === 0) {
                             orders.shift();
                         }
@@ -85,25 +60,6 @@ function buy(userId, stockSymbol, quantity, price, stockType) {
                     else {
                         //place transaction
                         transaction(userId, Seller, SellerType, sellerQuantity, value, stockType, stockSymbol, altType);
-                        // Orderbook[stockSymbol][stockType][value].total -= sellerQuantity;
-                        // if (Orderbook[stockSymbol][stockType][value].orders[0].type === "buy") {
-                        //     //seller case
-                        //     const lockedMoney: number = (1000 - value) * sellerQuantity;
-                        //     inr_balance["probo"].balance += lockedMoney;
-                        //     inr_balance[Seller].locked -= lockedMoney;
-                        //     stock_balance[Seller][stockSymbol][altType].quantity += sellerQuantity;
-                        //     //buyer case
-                        //     stock_balance[userId][stockSymbol][stockType].quantity += sellerQuantity;
-                        //     inr_balance[userId].balance -= value * sellerQuantity;
-                        // } else {
-                        //     //seller case
-                        //     inr_balance[Seller].locked += (value * sellerQuantity);
-                        //     stock_balance[Seller][stockSymbol][stockType].locked -= sellerQuantity;
-                        //     //buyer case
-                        //     stock_balance[userId][stockSymbol][stockType].quantity += sellerQuantity;
-                        //     inr_balance[userId].balance -= value * sellerQuantity;
-                        //     inr_balance["probo"].balance += value * sellerQuantity;
-                        // }
                         schema_1.Orderbook[stockSymbol][stockType][value].orders.shift();
                         remainingQuantity -= sellerQuantity;
                     }

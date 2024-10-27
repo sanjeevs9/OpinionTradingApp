@@ -19,6 +19,12 @@ export function getBalance(id:string,data:any){
 export function getStock(id:string,data:any){
     const userId=data.userId;
 
+    if(!inr_balance[userId]){
+        const message="user not found"
+        publish(id,JSON.stringify(message));
+        return;
+    }
+
     if(!stock_balance[userId]){
         const message="User has no stocks"
         publish(id,JSON.stringify(message));
@@ -54,6 +60,11 @@ export function reset(id:string){
 
 export function createUser(id:string,data:any){
     const userId=data.userId;
+    if(inr_balance[userId]){
+        const message="user already exists"
+        publish(id,JSON.stringify(message));
+        return;
+    }
 
     const user={
         balance:0,
@@ -69,6 +80,12 @@ export function createUser(id:string,data:any){
 
 export function createStock(id:string,data:any){
     const stockSymbol=data.stockSymbol;
+
+    if(Orderbook[stockSymbol]){
+        const message="stock already exists"
+        publish(id,JSON.stringify(message));
+        return ;
+    }
 
     Orderbook[stockSymbol]={
         "yes":{},

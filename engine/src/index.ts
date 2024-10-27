@@ -10,7 +10,9 @@ async function check(){
             let value=await client.brPop("endpoint",0);
             const key=value.key;//endpoint
             const element=JSON.parse(value.element);
-
+            console.log(value.element)
+            console.log(element);
+            
             const endpoint=element.endpoint;
             const data=element.data;
             const id=element.id;

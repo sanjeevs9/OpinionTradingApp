@@ -51,14 +51,16 @@ router.get("/balance/inr/:userId", (req, res) => __awaiter(void 0, void 0, void 
     const data = {
         userId: userId
     };
-    (0, functions_1.queue)("/balance/inr/:userId", data, id);
+    console.log(data);
     yield start_1.subscriber.subscribe(id, (message) => {
         const value = JSON.parse(message);
+        console.log(value);
         res.json({
             message: value
         });
         return;
     });
+    (0, functions_1.queue)("/balance/inr/:userId", data, id);
 }));
 router.get("/balance/stock/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
