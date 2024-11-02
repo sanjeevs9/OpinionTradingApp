@@ -4,6 +4,7 @@ import { inr_balance, Orderbook, stock_balance } from "./schema";
 import {client,start,publisher,subscriber } from "./start";
 start();
 
+
 async function check(){
     while(true){
         try{
