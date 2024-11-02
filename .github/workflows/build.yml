@@ -1,0 +1,34 @@
+name: Build on PR
+
+on:
+  pull_request:
+    branches:
+      - "**"  # Trigger on pull requests from any branch
+
+jobs:
+  build:
+    name: Build on pull request
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        backend: [api-backend, engine, web-socket]  # Define each backend directory
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Checks out the repository code
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Specify the Node.js version to use
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.backend }}  # Change to the appropriate backend directory
+          npm install  # Install dependencies
+
+      - name: Run build command
+        run: |
+          cd ${{ matrix.backend }}  # Change to the appropriate backend directory
+          npm run build  # Run the build command for each backend

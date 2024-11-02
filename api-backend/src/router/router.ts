@@ -9,13 +9,14 @@ router.get("/orderbook", async (req:Request,res:Response)=>{
     const id=generate();
   console.log(id);
   
-    queue("/orderbook",{},id)
+  
 
-    await subscriber.subscribe(`${id}`,(message:string)=>{      
+     subscriber.subscribe(`${id}`,(message:string)=>{      
         const value=JSON.parse(message);  
         res.send(value);
         return;
     });
+    queue("/orderbook",{},id)
 })
 
 router.get("/balances/inr", async (req:Request,res:Response)=>{

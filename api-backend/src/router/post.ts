@@ -7,7 +7,7 @@ export default router
 
 router.post("/reset",(req:Request,res:Response)=>{
     const id=generate();
-    queue("/reset",{},id);
+    
 
     subscriber.subscribe(id,(message:any)=>{
         const value=JSON.parse(message);
@@ -16,23 +16,58 @@ router.post("/reset",(req:Request,res:Response)=>{
         })
         return;
     })
+    queue("/reset",{},id);
     
 })
 
-router.post("/user/create/:userId",async (req:Request,res:Response)=>{
+router.post("/user/create/:userId", async (req:Request,res:Response)=>{
     try{
         const userId=req.params.userId;
     const id=generate();
     const data={
         userId
     }
-    queue("/user/create/:userId",data,id);
-    subscriber.subscribe(id,(message:any)=>{
+  
+
+    await subscriber.subscribe(id,(message:any)=>{
+        subscriber.unsubscribe(id);
         res.json({
             message:message
         })
-        return;
     });
+    
+    queue("/user/create/:userId",data,id);
+
+    }catch(err){
+        console.log(err);
+        
+    }
+    
+})
+
+function get(){
+    
+}
+
+router.post("/user/create/:userId", async (req:Request,res:Response)=>{
+    try{
+        const userId=req.params.userId;
+    const id=generate();
+    const data={
+        userId
+    }
+
+   const resposne = await new Promise((resolve, reject) => {
+        subscriber.subscribe(id,(message:any)=>{
+            subscriber.unsubscribe(id);
+           resolve(message);
+        });
+        queue("/user/create/:userId",data,id);
+    })
+     
+    res.send('hi there');
+    return;
+
     }catch(err){
         console.log(err);
         
@@ -41,19 +76,20 @@ router.post("/user/create/:userId",async (req:Request,res:Response)=>{
 })
 
 //create stockSymbol
-router.post("/symbol/create/:stockSymbol",(req:Request,res:Response)=>{
+router.post("/symbol/create/:stockSymbol",async (req:Request,res:Response)=>{
     const id=generate();
     const stockSymbol=req.params.stockSymbol;
     const data={
         stockSymbol
     }
-    queue("/symbol/create/:stockSymbol",data,id);
-    subscriber.subscribe(id,(message:string)=>{
+ 
+    await subscriber.subscribe(id,(message:string)=>{
         res.json({
             message:message
         })
         return
     })
+    queue("/symbol/create/:stockSymbol",data,id);
     
 })
 
@@ -70,13 +106,14 @@ router.post("/onramp/inr", async (req:Request,res:Response)=>{
             userId,
             amount:paise,
         }
-        queue("/onramp/inr",data,id);
+       
         subscriber.subscribe(id,(message:any)=>{
             res.json({
                 message:message
             })
             return
         })
+        queue("/onramp/inr",data,id);
     }catch(err){
         console.log(err);
         

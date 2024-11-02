@@ -19,7 +19,6 @@ const router = express_1.default.Router();
 exports.default = router;
 router.post("/reset", (req, res) => {
     const id = (0, functions_1.generate)();
-    (0, functions_1.queue)("/reset", {}, id);
     start_1.subscriber.subscribe(id, (message) => {
         const value = JSON.parse(message);
         res.json({
@@ -27,6 +26,7 @@ router.post("/reset", (req, res) => {
         });
         return;
     });
+    (0, functions_1.queue)("/reset", {}, id);
 });
 router.post("/user/create/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -35,33 +35,54 @@ router.post("/user/create/:userId", (req, res) => __awaiter(void 0, void 0, void
         const data = {
             userId
         };
-        (0, functions_1.queue)("/user/create/:userId", data, id);
-        start_1.subscriber.subscribe(id, (message) => {
+        yield start_1.subscriber.subscribe(id, (message) => {
+            start_1.subscriber.unsubscribe(id);
             res.json({
                 message: message
             });
-            return;
         });
+        (0, functions_1.queue)("/user/create/:userId", data, id);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}));
+router.post("/user/create/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.params.userId;
+        const id = (0, functions_1.generate)();
+        const data = {
+            userId
+        };
+        yield new Promise((res, rej) => {
+            start_1.subscriber.subscribe(id, (message) => {
+                start_1.subscriber.unsubscribe(id);
+                res(message);
+            });
+            (0, functions_1.queue)("/user/create/:userId", data, id);
+        });
+        res.send('hi there');
+        return;
     }
     catch (err) {
         console.log(err);
     }
 }));
 //create stockSymbol
-router.post("/symbol/create/:stockSymbol", (req, res) => {
+router.post("/symbol/create/:stockSymbol", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = (0, functions_1.generate)();
     const stockSymbol = req.params.stockSymbol;
     const data = {
         stockSymbol
     };
-    (0, functions_1.queue)("/symbol/create/:stockSymbol", data, id);
-    start_1.subscriber.subscribe(id, (message) => {
+    yield start_1.subscriber.subscribe(id, (message) => {
         res.json({
             message: message
         });
         return;
     });
-});
+    (0, functions_1.queue)("/symbol/create/:stockSymbol", data, id);
+}));
 //add money to user account
 router.post("/onramp/inr", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -75,13 +96,13 @@ router.post("/onramp/inr", (req, res) => __awaiter(void 0, void 0, void 0, funct
             userId,
             amount: paise,
         };
-        (0, functions_1.queue)("/onramp/inr", data, id);
         start_1.subscriber.subscribe(id, (message) => {
             res.json({
                 message: message
             });
             return;
         });
+        (0, functions_1.queue)("/onramp/inr", data, id);
     }
     catch (err) {
         console.log(err);

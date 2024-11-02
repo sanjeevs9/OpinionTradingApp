@@ -13,6 +13,12 @@ app.use(express_1.default.json());
 (0, start_1.start)();
 app.use("/", router_1.default);
 app.use("/", post_1.default);
+app.get("/hello", (req, res) => {
+    res.json({
+        message: "hello from api backend"
+    });
+    return;
+});
 app.listen(PORT, () => {
     console.log(`backend connected on ${PORT}`);
 });

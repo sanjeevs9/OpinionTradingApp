@@ -20,12 +20,12 @@ exports.default = router;
 router.get("/orderbook", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = (0, functions_1.generate)();
     console.log(id);
-    (0, functions_1.queue)("/orderbook", {}, id);
-    yield start_1.subscriber.subscribe(`${id}`, (message) => {
+    start_1.subscriber.subscribe(`${id}`, (message) => {
         const value = JSON.parse(message);
         res.send(value);
         return;
     });
+    (0, functions_1.queue)("/orderbook", {}, id);
 }));
 router.get("/balances/inr", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = (0, functions_1.generate)();
