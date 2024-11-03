@@ -50,14 +50,13 @@ jobs:
             
             # Deploy engine
             cd engine
-            echo $PATH
-            which npm
-            which pm2
+            ls
             npm run build  # Build the engine
             pm2 start ./dist/index.js --name engine || pm2 restart engine  # Start or restart the engine
             
             # Deploy api-backend
             cd ../api-backend
+            ls
             npm run build  # Build the API backend
             pm2 start ./dist/index.js --name api || pm2 restart api  # Start or restart the API
             
