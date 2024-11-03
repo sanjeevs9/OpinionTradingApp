@@ -50,6 +50,9 @@ jobs:
             
             # Deploy engine
             cd engine
+            echo $PATH
+            which npm
+            which pm2
             npm run build  # Build the engine
             pm2 start ./dist/index.js --name engine || pm2 restart engine  # Start or restart the engine
             
