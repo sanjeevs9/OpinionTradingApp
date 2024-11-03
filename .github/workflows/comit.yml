@@ -50,20 +50,5 @@ jobs:
             
             # Deploy engine
             cd engine
-            npm install  # Install dependencies for the engine
-            npm run build  # Build the engine
-            pm2 restart engine  # Start or restart the engine
+            ls
             
-            # Deploy api-backend
-            cd ../api-backend
-            npm install  # Install dependencies for the API backend
-            npm run build  # Build the API backend
-            pm2 restart api  # Start or restart the API
-            
-            # Deploy web-socket
-            cd ../web-socket
-            npm install  # Install dependencies for the WebSocket server
-            npm run build  # Build the WebSocket server
-            pm2 restart index  # Start or restart WebSocket server
-            
-            pm2 save  # Save the PM2 process list
