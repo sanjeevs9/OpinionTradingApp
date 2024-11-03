@@ -16,7 +16,7 @@ const action_1 = require("./actions.ts/action");
 const publihser_1 = __importDefault(require("./publihser"));
 const schema_1 = require("./schema");
 const start_1 = require("./start");
-(0, start_1.start)();
+start();
 function check() {
     return __awaiter(this, void 0, void 0, function* () {
         while (true) {
