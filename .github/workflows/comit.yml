@@ -35,7 +35,8 @@ jobs:
 
   deploy:
     name: Deploy to EC2
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
+    needs: build-and-push  # Ensure this job runs only after build-and-push completes successfully
 
     steps:
       - name: Deploy to EC2
@@ -45,24 +46,25 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}  # EC2 username from GitHub secrets
           key: ${{ secrets.SSH_KEY }}  # Load SSH key from GitHub secrets
           script: |
-            cd OpinionTradingApp  # Change to your application directory
-            git pull origin main  # Pull the latest code from the main branch
+            cd OpinionTradingApp
+            git pull origin main
             
             # Deploy engine
             cd engine
-            ls
-            npm run build  # Build the engine
-            pm2 start ./dist/index.js --name engine || pm2 restart engine  # Start or restart the engine
+            /usr/local/bin/npm install  # Full path to npm
+            /usr/local/bin/npm run build  # Full path to npm
+            /usr/local/bin/pm2 start ./dist/index.js --name engine || /usr/local/bin/pm2 restart engine  # Full path to pm2
             
             # Deploy api-backend
             cd ../api-backend
-            ls
-            npm run build  # Build the API backend
-            pm2 start ./dist/index.js --name api || pm2 restart api  # Start or restart the API
+            /usr/local/bin/npm install  # Full path to npm
+            /usr/local/bin/npm run build  # Full path to npm
+            /usr/local/bin/pm2 start ./dist/index.js --name api || /usr/local/bin/pm2 restart api  # Full path to pm2
             
             # Deploy web-socket
             cd ../web-socket
-            npm run build  # Build the WebSocket server
-            pm2 start ./dist/index.js --name websocket || pm2 restart websocket  # Start or restart WebSocket server
+            /usr/local/bin/npm install  # Full path to npm
+            /usr/local/bin/npm run build  # Full path to npm
+            /usr/local/bin/pm2 start ./dist/index.js --name websocket || /usr/local/bin/pm2 restart websocket  # Full path to pm2
             
             pm2 save  # Save the PM2 process list
