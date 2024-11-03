@@ -35,8 +35,7 @@ jobs:
 
   deploy:
     name: Deploy to EC2
-    runs-on: ubuntu-latest
-    needs: build-and-push  # Ensure this job runs only after build-and-push completes successfully
+    runs-on: ubuntu-latest    
 
     steps:
       - name: Deploy to EC2
@@ -49,22 +48,26 @@ jobs:
             cd OpinionTradingApp
             git pull origin main
             
+            # Load nvm
+            export NVM_DIR="/home/ubuntu/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
             # Deploy engine
             cd engine
-            /usr/local/bin/npm install  # Full path to npm
-            /usr/local/bin/npm run build  # Full path to npm
-            /usr/local/bin/pm2 start ./dist/index.js --name engine || /usr/local/bin/pm2 restart engine  # Full path to pm2
+            npm install  # Use npm directly
+            npm run build  # Use npm directly
+            pm2 start ./dist/index.js --name engine || pm2 restart engine  # Use pm2 directly
             
             # Deploy api-backend
             cd ../api-backend
-            /usr/local/bin/npm install  # Full path to npm
-            /usr/local/bin/npm run build  # Full path to npm
-            /usr/local/bin/pm2 start ./dist/index.js --name api || /usr/local/bin/pm2 restart api  # Full path to pm2
+            npm install  # Use npm directly
+            npm run build  # Use npm directly
+            pm2 start ./dist/index.js --name api || pm2 restart api  # Use pm2 directly
             
             # Deploy web-socket
             cd ../web-socket
-            /usr/local/bin/npm install  # Full path to npm
-            /usr/local/bin/npm run build  # Full path to npm
-            /usr/local/bin/pm2 start ./dist/index.js --name websocket || /usr/local/bin/pm2 restart websocket  # Full path to pm2
+            npm install  # Use npm directly
+            npm run build  # Use npm directly
+            pm2 start ./dist/index.js --name websocket || pm2 restart websocket  # Use pm2 directly
             
             pm2 save  # Save the PM2 process list
