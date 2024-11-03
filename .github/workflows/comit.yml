@@ -51,24 +51,24 @@ jobs:
             
             # Load nvm
             export NVM_DIR="/home/ubuntu/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
             # Deploy engine
             cd engine
-            npm install  # Use npm directly
-            npm run build  # Use npm directly
-            pm2 start ./dist/index.js --name engine || pm2 restart engine  # Use pm2 directly
+            npm install
+            npm run build
+            pm2 start ./dist/index.js --name engine || pm2 restart engine
             
             # Deploy api-backend
             cd ../api-backend
-            npm install  # Use npm directly
-            npm run build  # Use npm directly
-            pm2 start ./dist/index.js --name api || pm2 restart api  # Use pm2 directly
+            npm install
+            npm run build
+            pm2 start ./dist/index.js --name api || pm2 restart api
             
             # Deploy web-socket
             cd ../web-socket
-            npm install  # Use npm directly
-            npm run build  # Use npm directly
-            pm2 start ./dist/index.js --name websocket || pm2 restart websocket  # Use pm2 directly
+            npm install
+            npm run build
+            pm2 start ./dist/index.js --name websocket || pm2 restart websocket
             
-            pm2 save  # Save the PM2 process list
+            pm2 save
