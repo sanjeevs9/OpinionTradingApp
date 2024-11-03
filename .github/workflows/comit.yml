@@ -1,0 +1,69 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - "**"  # Trigger on pushes to any branch
+
+jobs:
+  build-and-push:
+    name: Build and Push
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        backend: [api-backend, engine, web-socket]  # Define each backend directory
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Checks out the repository code
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Specify the Node.js version to use
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.backend }}  # Change to the appropriate backend directory
+          npm install  # Install dependencies
+
+      - name: Run build command
+        run: |
+          cd ${{ matrix.backend }}  # Change to the appropriate backend directory
+          npm run build  # Run the build command for each backend
+
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest    
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}  # EC2 host from GitHub secrets
+          username: ${{ secrets.SSH_USERNAME }}  # EC2 username from GitHub secrets
+          key: ${{ secrets.SSH_KEY }}  # Load SSH key from GitHub secrets
+          script: |
+            cd OpinionTradingApp  # Change to your application directory
+            git pull origin main  # Pull the latest code from the main branch
+            
+            # Deploy engine
+            cd engine
+            npm install  # Install dependencies for the engine
+            npm run build  # Build the engine
+            pm2 start ./dist/index.js --name engine || pm2 restart engine  # Start or restart the engine
+            
+            # Deploy api-backend
+            cd ../api-backend
+            npm install  # Install dependencies for the API backend
+            npm run build  # Build the API backend
+            pm2 start ./dist/index.js --name api || pm2 restart api  # Start or restart the API
+            
+            # Deploy web-socket
+            cd ../web-socket
+            npm install  # Install dependencies for the WebSocket server
+            npm run build  # Build the WebSocket server
+            pm2 start ./dist/index.js --name websocket || pm2 restart websocket  # Start or restart WebSocket server
+            
+            pm2 save  # Save the PM2 process list
