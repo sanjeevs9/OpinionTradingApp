@@ -4,7 +4,7 @@ import { Events } from "./component/events";
 export const EventPage = () => {
   return (
     <>
-      {/* <Events /> */}
+      <Events />
       <BodyContent />
     </>
   );

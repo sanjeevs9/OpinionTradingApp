@@ -37,12 +37,12 @@ export const TopStories = () => {
               <Button
                 text={"Yes"}
                 price={"8.0"}
-                customClasses={"bg-[#F1F7FF] text-[#1A7BFE]"}
+                customClasses={"cursor-default bg-[#F1F7FF] text-[#1A7BFE]"}
               />
-              <Button
+              <Button 
                 text={"No"}
                 price={"2.0"}
-                customClasses={"bg-[#FEF5F5] text-[#E05852]"}
+                customClasses={"cursor-default bg-[#FEF5F5] text-[#E05852]"}
               />
             </div>
           </div>

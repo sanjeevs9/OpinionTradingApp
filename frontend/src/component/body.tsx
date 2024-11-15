@@ -10,7 +10,7 @@ export const BodyContent = () => {
   const [isDownload, setIsDownload] = useState(false);
   return (
     <>
-      <div className="p-4 relative px-4 md:px-10 flex flex-col lg:flex-row z-0">
+      <div className="p-4 relative px-4 md:px-10 flex flex-col   lg:flex-row z-0">
 
         <div className="lg:w-[70%] w-full">
           <h1 className="text-xl font-semibold mb-3">Top Stories</h1>
@@ -35,7 +35,7 @@ export const BodyContent = () => {
             </div>
           </div>
         </div>
-        <div key="add" className="lg:w-[30%] w-full lg:ml-8 mt-8 lg:mt-0">
+        <div key="add" className="lg:w-[30%] w-full lg:ml-8 mt-8 lg:mt-0 ">
           <div className="rounded-lg p-4 justify-around bg-[#EDEDED] flex flex-col lg:flex-row items-center lg:items-start">
             <div className="lg:w-1/2 w-full text-center lg:text-left">
               <h1 className="text-xl font-bold">

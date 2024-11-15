@@ -1,59 +1,60 @@
+import axios from "axios";
 import logo from "../assets/probo.avif";
 import profile from "../assets/profile.avif";
 import { GoHome } from "react-icons/go";
-import {
-  IoBagRemoveOutline,
-  IoWalletOutline,
-} from "react-icons/io5";
+import { IoBagRemoveOutline, IoWalletOutline } from "react-icons/io5";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useState, useEffect, useRef } from "react";
+import { v4 as uuid } from 'uuid';
 
 export const Navbar = () => {
-  const [showLogout, setShowLogout] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showWalletDialog, setShowWalletDialog] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [showDropdown, setShowDropdown] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const api = import.meta.env.VITE_BACKEND_API;
+  const userId = localStorage.getItem("userId");
 
   const handleProfileClick = () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
       setShowLoginModal(true);
     } else {
-      setShowLogout(!showLogout);
+      setShowDropdown(!showDropdown);
     }
   };
 
-  const handleLogin = () => {
-    const credentials = {
-      email: "user@example.com",
-      password: "password123",
-    };
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setShowDropdown(false);
+  };
 
-    fetch("https://your-backend-url.com/login", {
+  useEffect(() => {
+    if (!userId) {
+      setShowLoginModal(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    let userId = uuid();
+
+    fetch(`${api}/user/create/${userId}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log("Login successful", data);
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.userId);
         setShowLoginModal(false);
         setIsLoggedIn(true);
       })
       .catch((error) => {
         console.error("Error logging in", error);
       });
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setShowLogout(false);
   };
 
   const handleAddMoney = () => {
@@ -65,11 +66,10 @@ export const Navbar = () => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setShowLoginModal(false);
         setShowWalletDialog(false);
-        setShowLogout(false);
       }
     };
 
-    if (showLoginModal || showWalletDialog || showLogout) {
+    if (showLoginModal || showWalletDialog) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -78,7 +78,7 @@ export const Navbar = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showLoginModal, showWalletDialog, showLogout]);
+  }, [showLoginModal, showWalletDialog]);
 
   return (
     <>
@@ -103,24 +103,18 @@ export const Navbar = () => {
               </span>
               <span className="font-bold text-sm -mt-[1px]">₹{walletBalance}</span>
             </button>
-            <span className="mt-2 h-12 flex cursor-pointer relative">
+            <span className="mt-2 h-12 flex cursor-pointer relative" onClick={handleProfileClick}>
               <img
                 className="mb-4 ml-2 w-10 h-10 rounded-[50%] object-fill"
                 src={profile}
                 alt="profile"
-                onClick={handleProfileClick}
               />
-              <span
-                onMouseEnter={() => setShowLogout(!showLogout)}
-                className="mt-2 ml-2 cursor-pointer"
-              >
-                <MdKeyboardArrowDown size={25} />
-              </span>
-              {showLogout && (
-                <div className="absolute right-0 mt-12 bg-white border rounded shadow-lg z-20">
+              <MdKeyboardArrowDown size={25} />
+              {showDropdown && (
+                <div className="dropdown absolute right-0 mt-12 bg-white border border-gray-300 rounded shadow-lg">
                   <button
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                     onClick={handleLogout}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Logout
                   </button>
@@ -138,7 +132,7 @@ export const Navbar = () => {
               <label className="block text-[#262626] font-medium">Email</label>
               <input
                 type="text"
-                value="user@example.com"
+                value="test@gmail.com"
                 readOnly
                 className="w-full px-4 py-2 border rounded-lg bg-[#E3E3E3] text-[#262626] cursor-not-allowed"
               />

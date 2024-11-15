@@ -25,7 +25,7 @@ export const TradeCard = ({
     <>
       <div
         key={symbol.id}
-        className="border grid-flow-row w-full p-3 rounded-xl bg-white shadow-md mt-3"
+        className="cursor-pointer border grid-flow-row w-full p-3 rounded-xl bg-white shadow-md mt-3"
       >
         <span className="flex text-xs">
           <img
