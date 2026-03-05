@@ -92,6 +92,7 @@ export function createStock(id:string,data:any){
         "no":{}
     }
     const message="stock created"
+    console.log(message,stockSymbol,Orderbook);
     publish(id,JSON.stringify(message));
 }
 
@@ -133,7 +134,7 @@ export async function buyStock(id:string,data:any){
     console.log(stockSymbol)
     await publish(stockSymbol,JSON.stringify(value))
 }
-export function sellStock(id:string,data:any){
+export async function sellStock(id:string,data:any){
         
     const userId:string=data.userId;
     const stockSymbol:string=data.stockSymbol;
@@ -154,5 +155,5 @@ export function sellStock(id:string,data:any){
     const message=sell(userId,stockSymbol,quantity,price,stockType);
     publish(id,JSON.stringify(message));
     const value=Orderbook[stockSymbol];
-    publish(stockSymbol,JSON.stringify(value))
+    await publish(stockSymbol,JSON.stringify(value))
 }

@@ -55,7 +55,7 @@ const ProbabilityGraph = () => {
         <div className="flex items-center justify-end">
           <button
             onClick={() => setYes(!yes)}
-            className={`w-20 px-2 py-[2px] text-xs flex justify-around items-center mr-10 ${yes ? 'text-[#E05852] font-bold border-2 border-[#E05852]': 'text-blue-600 font-bold border-2 border-blue-600'} rounded-lg`}
+            className={`w-20 px-2 py-[2px] text-xs flex justify-around items-center mr-10 cursor-pointer ${yes ? 'text-[#E05852] font-bold border-2 border-[#E05852]': 'text-blue-600 font-bold border-2 border-blue-600'} rounded-lg`}
           >
             <IoIosSwap size={20} />
             {!yes ? 'Yes' : 'No'}

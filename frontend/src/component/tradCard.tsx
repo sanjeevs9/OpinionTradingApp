@@ -1,31 +1,30 @@
 import trades from "../assets/trades.avif";
 import coma from "../assets/coma.avif";
 import { Button } from "../utils/buttons";
+import { useNavigate } from "react-router-dom";
+
+function symbolAvatar(seed: string) {
+  return `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}&size=70&backgroundColor=f1f5f9`;
+}
 
 interface TradeCardType {
-  symbol: any;
-  url: any;
-  yesPrice: string;
-  noPrice: string;
-  totalTrades: string;
-  title: string;
-  description: string;
+  stockSymbol: string;
+  yesPrice: number;
+  noPrice: number;
 }
 
 export const TradeCard = ({
-  symbol,
-  url,
+  stockSymbol,
   yesPrice,
   noPrice,
-  totalTrades,
-  title,
-  description,
 }: TradeCardType) => {
+  const navigate = useNavigate();
+
   return (
     <>
       <div
-        key={symbol.id}
-        className="cursor-pointer border grid-flow-row w-full p-3 rounded-xl bg-white shadow-md mt-3"
+        onClick={() => navigate(`/event-details/${stockSymbol}`)}
+        className="border grid-flow-row w-full p-3 rounded-xl bg-white shadow-md mt-3 cursor-pointer"
       >
         <span className="flex text-xs">
           <img
@@ -35,17 +34,17 @@ export const TradeCard = ({
             src={trades}
             alt="trades"
           />
-          {totalTrades} traders
+          0 traders
         </span>
         <div className="flex space-x-4">
           <img
             className="rounded-lg mt-2"
             width={70}
             height={70}
-            src={url}
-            alt="tradeicon"
+            src={symbolAvatar(stockSymbol)}
+            alt={stockSymbol}
           />
-          <h2 className="text-lg py-2 font-medium">{title}</h2>
+          <h2 className="text-lg py-2 font-medium">{stockSymbol}</h2>
         </div>
         <span className="flex text-[#5E5E5E] text-xs mt-4">
           <img
@@ -55,7 +54,7 @@ export const TradeCard = ({
             src={coma}
             alt="coma"
           />
-          {description}
+          Trade on {stockSymbol}
         </span>
         <div className="flex p-1 mt-4 gap-2">
           <Button

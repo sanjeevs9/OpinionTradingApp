@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build":"tsc -b",
-    "dev":"tsc-watch --onSuccess \"npm start\"",
-    "start":"node ./dist/index.js"
+    "build": "tsc -b",
+    "dev": "tsc-watch --onSuccess \"npm start\"",
+    "start": "node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +14,16 @@
   "description": "",
   "dependencies": {
     "@types/redis": "^4.0.10",
+    "cors": "^2.8.6",
     "expres": "^0.0.5",
     "express": "^4.21.1",
     "ioredis": "^5.4.1",
     "redis": "^4.7.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "tsc-watch": "^7.2.0",
+    "typescript": "^5.9.3"
   }
 }

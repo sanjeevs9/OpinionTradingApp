@@ -101,6 +101,7 @@ export const Footer = () => {
               <div className="w-1/2 flex justify-end md:pr-10 mt-5 space-x-4">
                 {technology.map((item) => (
                   <img
+                    key={item.title}
                     className="object-contain"
                     width={60}
                     height={60}

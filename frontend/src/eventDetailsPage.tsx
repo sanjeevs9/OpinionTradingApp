@@ -1,12 +1,12 @@
-import { EventsCompo } from "./component/eventComponent"
+import { useParams } from "react-router-dom";
+import { EventsCompo } from "./component/eventComponent";
 
+export const EventDetailsPage = () => {
+  const { stockSymbol } = useParams<{ stockSymbol: string }>();
 
-
-export const EventDetailsPage = () =>{
-
-    return (
-        <>
-          <EventsCompo/>
-        </>
-    )
-}
+  return (
+    <>
+      <EventsCompo stockSymbol={stockSymbol || ""} />
+    </>
+  );
+};

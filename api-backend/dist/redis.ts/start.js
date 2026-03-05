@@ -24,7 +24,8 @@ function start() {
             console.log("redis connected");
         }
         catch (err) {
-            console.log(err);
+            console.error("Redis connection failed (is Redis running on 127.0.0.1:6379?). Start with: redis-server");
+            console.error(err);
         }
     });
 }

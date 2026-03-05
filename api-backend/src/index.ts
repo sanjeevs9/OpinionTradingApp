@@ -3,10 +3,12 @@ import router from "./router/router";
 import { start } from "./redis.ts/start";
 import post from "./router/post"
 import { Request,Response } from "express";
-
+import cors from "cors"
 const app=express();
 const PORT=3000;
 app.use(express.json())
+
+app.use(cors({origin:"*"}));
 
 start()
 app.use("/",router);

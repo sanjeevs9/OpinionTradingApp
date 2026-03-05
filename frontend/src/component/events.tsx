@@ -1,9 +1,16 @@
 import { useRef, useState } from "react";
 import { events } from "../db/data";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { symbols } from "../db/data";
+import type { SymbolCardData } from "../types";
+function symbolAvatar(seed: string) {
+  return `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}&size=20&backgroundColor=f1f5f9`;
+}
 
-export const Events = () => {
+interface EventsProps {
+  symbolCards: SymbolCardData[];
+}
+
+export const Events = ({ symbolCards }: EventsProps) => {
   const [activeTab, setActiveTab] = useState(1);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +42,7 @@ export const Events = () => {
               {item.title}
               {activeTab === item.eventId && (
                 <span
-                  className="absolute left-0 bottom-0 w-full h-[2px] bg-black 
+                  className="absolute left-0 bottom-0 w-full h-[2px] bg-black
               transition-transform duration-1000 ease-in-out transform translate-y-[2px]"
                 />
               )}
@@ -45,7 +52,7 @@ export const Events = () => {
       </div>
 
       <div className="p-2 px-9 flex">
-        <button onClick={scrollLeft} className="mr-1">
+        <button onClick={scrollLeft} className="mr-1 cursor-pointer">
           <IoIosArrowBack size={20} />
         </button>
         <div
@@ -53,23 +60,23 @@ export const Events = () => {
           style={{ scrollBehavior: "smooth" }}
           className="w-screen overflow-x-scroll scrollbar-hide flex space-x-4"
         >
-          {symbols.map((val) => (
+          {symbolCards.map((card) => (
             <button
-              key={val.id}
-              className="min-w-fit max-w-xs border bg-white shadow-md rounded-lg p-2 flex gap-2 text-sm font-sans overflow-hidden items-center"
+              key={card.stockSymbol}
+              className="min-w-fit max-w-xs border bg-white shadow-md rounded-lg p-2 flex gap-2 text-sm font-sans overflow-hidden items-center cursor-pointer"
             >
               <img
                 className="rounded flex-shrink-0"
                 width={20}
                 height={20}
-                src={val.url}
-                alt="ind"
+                src={symbolAvatar(card.stockSymbol)}
+                alt={card.stockSymbol}
               />
-              {val.mainTitle}
+              {card.stockSymbol}
             </button>
           ))}
         </div>
-        <button onClick={scrollRight} className="ml-1">
+        <button onClick={scrollRight} className="ml-1 cursor-pointer">
           <IoIosArrowForward size={20} />
         </button>
       </div>

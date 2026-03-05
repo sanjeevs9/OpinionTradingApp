@@ -102,6 +102,7 @@ function createStock(id, data) {
         "no": {}
     };
     const message = "stock created";
+    console.log(message, stockSymbol, schema_1.Orderbook);
     (0, publihser_1.default)(id, JSON.stringify(message));
 }
 function addMoney(id, data) {
@@ -142,23 +143,25 @@ function buyStock(id, data) {
     });
 }
 function sellStock(id, data) {
-    const userId = data.userId;
-    const stockSymbol = data.stockSymbol;
-    const quantity = data.quantity;
-    const price = data.price;
-    const stockType = data.stockType;
-    if (!schema_1.inr_balance[userId]) {
-        const message = "user not found";
+    return __awaiter(this, void 0, void 0, function* () {
+        const userId = data.userId;
+        const stockSymbol = data.stockSymbol;
+        const quantity = data.quantity;
+        const price = data.price;
+        const stockType = data.stockType;
+        if (!schema_1.inr_balance[userId]) {
+            const message = "user not found";
+            (0, publihser_1.default)(id, JSON.stringify(message));
+            return;
+        }
+        if (!schema_1.Orderbook[stockSymbol]) {
+            const message = "stock not found please try again later";
+            (0, publihser_1.default)(id, JSON.stringify(message));
+            return;
+        }
+        const message = (0, sell_1.sell)(userId, stockSymbol, quantity, price, stockType);
         (0, publihser_1.default)(id, JSON.stringify(message));
-        return;
-    }
-    if (!schema_1.Orderbook[stockSymbol]) {
-        const message = "stock not found please try again later";
-        (0, publihser_1.default)(id, JSON.stringify(message));
-        return;
-    }
-    const message = (0, sell_1.sell)(userId, stockSymbol, quantity, price, stockType);
-    (0, publihser_1.default)(id, JSON.stringify(message));
-    const value = schema_1.Orderbook[stockSymbol];
-    (0, publihser_1.default)(stockSymbol, JSON.stringify(value));
+        const value = schema_1.Orderbook[stockSymbol];
+        yield (0, publihser_1.default)(stockSymbol, JSON.stringify(value));
+    });
 }

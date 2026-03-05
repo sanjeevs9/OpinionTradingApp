@@ -32,40 +32,24 @@ router.post("/user/create/:userId", (req, res) => __awaiter(void 0, void 0, void
     try {
         const userId = req.params.userId;
         const id = (0, functions_1.generate)();
-        const data = {
-            userId
-        };
-        yield start_1.subscriber.subscribe(id, (message) => {
-            start_1.subscriber.unsubscribe(id);
-            res.json({
-                message: message
-            });
-        });
-        (0, functions_1.queue)("/user/create/:userId", data, id);
-    }
-    catch (err) {
-        console.log(err);
-    }
-}));
-router.post("/user/create/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const userId = req.params.userId;
-        const id = (0, functions_1.generate)();
-        const data = {
-            userId
-        };
-        yield new Promise((res, rej) => {
-            start_1.subscriber.subscribe(id, (message) => {
+        const data = { userId };
+        const response = yield new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
                 start_1.subscriber.unsubscribe(id);
-                res(message);
+                reject(new Error('Request timeout'));
+            }, 5000);
+            start_1.subscriber.subscribe(id, (message) => {
+                clearTimeout(timeout);
+                start_1.subscriber.unsubscribe(id);
+                resolve(message);
             });
             (0, functions_1.queue)("/user/create/:userId", data, id);
         });
-        res.send('hi there');
-        return;
+        res.json({ message: response });
     }
     catch (err) {
-        console.log(err);
+        console.error(err);
+        res.status(500).json({ error: 'Failed to create user' });
     }
 }));
 //create stockSymbol
@@ -154,4 +138,110 @@ router.post("/order/sell", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
         return;
     });
+}));
+// --- Bot Market Maker ---
+function queueAndWait(endpoint, data) {
+    return new Promise((resolve, reject) => {
+        const id = (0, functions_1.generate)();
+        const timeout = setTimeout(() => {
+            start_1.subscriber.unsubscribe(id);
+            reject(new Error(`Timeout waiting for ${endpoint}`));
+        }, 5000);
+        start_1.subscriber.subscribe(id, (message) => {
+            clearTimeout(timeout);
+            start_1.subscriber.unsubscribe(id);
+            resolve(message);
+        });
+        (0, functions_1.queue)(endpoint, data, id);
+    });
+}
+function queueFireAndForget(endpoint, data) {
+    const id = (0, functions_1.generate)();
+    (0, functions_1.queue)(endpoint, data, id);
+}
+function normalRandom(mean, stddev) {
+    const u1 = Math.random();
+    const u2 = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    return mean + z * stddev;
+}
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function clampPrice(p) {
+    return Math.max(10, Math.min(990, Math.round(p / 10) * 10));
+}
+function generateOrders(stockSymbol, botUsers) {
+    let fairPrice = 500 + randInt(-50, 50);
+    let orderCount = 0;
+    for (let round = 0; round < 5; round++) {
+        // Bids: 3 buy YES orders below fair price
+        for (let i = 0; i < 3; i++) {
+            const price = clampPrice(normalRandom(fairPrice - 40, 30));
+            const quantity = randInt(1, 15);
+            const userId = botUsers[randInt(0, botUsers.length - 1)];
+            queueFireAndForget("/order/buy", { userId, stockSymbol, quantity, price, stockType: "yes" });
+            orderCount++;
+        }
+        // Asks: 3 buy NO orders (appears as YES sell side)
+        for (let i = 0; i < 3; i++) {
+            const noPrice = clampPrice(normalRandom((1000 - fairPrice) - 40, 30));
+            const quantity = randInt(1, 15);
+            const userId = botUsers[randInt(0, botUsers.length - 1)];
+            queueFireAndForget("/order/buy", { userId, stockSymbol, quantity, price: noPrice, stockType: "no" });
+            orderCount++;
+        }
+        // Crossing trades: 1-2 aggressive orders that cross the spread
+        const crossCount = randInt(1, 2);
+        for (let i = 0; i < crossCount; i++) {
+            const userId = botUsers[randInt(0, botUsers.length - 1)];
+            if (Math.random() > 0.5) {
+                // Aggressive YES buy at/above fair
+                const price = clampPrice(fairPrice + randInt(0, 20));
+                queueFireAndForget("/order/buy", { userId, stockSymbol, quantity: randInt(1, 5), price, stockType: "yes" });
+            }
+            else {
+                // Aggressive NO buy at/above complement
+                const price = clampPrice((1000 - fairPrice) + randInt(0, 20));
+                queueFireAndForget("/order/buy", { userId, stockSymbol, quantity: randInt(1, 5), price, stockType: "no" });
+            }
+            orderCount++;
+        }
+        // Price drift
+        fairPrice += randInt(-15, 15);
+        fairPrice = Math.max(100, Math.min(900, fairPrice));
+    }
+    return orderCount;
+}
+router.post("/bot", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { stockSymbol } = req.body;
+        if (!stockSymbol) {
+            res.status(400).json({ error: "stockSymbol is required" });
+            return;
+        }
+        // Phase 1: Create bot users, fund them, create symbol
+        const botUsers = [];
+        for (let i = 0; i < 5; i++) {
+            const userId = `bot_${stockSymbol}_${i}_${Date.now()}`;
+            yield queueAndWait("/user/create/:userId", { userId });
+            // Amount in paise (bypassing Express route, no ×100 conversion)
+            yield queueAndWait("/onramp/inr", { userId, amount: 500000 });
+            botUsers.push(userId);
+        }
+        yield queueAndWait("/symbol/create/:stockSymbol", { stockSymbol });
+        // Phase 2: Generate orders (fire & forget)
+        const ordersPlaced = generateOrders(stockSymbol, botUsers);
+        // Phase 3: Return summary
+        res.json({
+            message: "Bot market maker started",
+            botsCreated: botUsers.length,
+            ordersPlaced,
+            stockSymbol,
+        });
+    }
+    catch (err) {
+        console.error("Bot error:", err);
+        res.status(500).json({ error: "Bot market maker failed" });
+    }
 }));

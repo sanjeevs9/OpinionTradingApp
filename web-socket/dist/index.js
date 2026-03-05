@@ -20,36 +20,54 @@ wss.on("connection", function connection(socket) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(data.toString());
             const receivedmsg = JSON.parse(data.toString());
-            const { stockName, eventType } = receivedmsg;
-            socket.send(data.toString());
+            const stockName = receivedmsg.stockSymbol || receivedmsg.stockName;
+            const eventType = receivedmsg.type || receivedmsg.eventType;
             if (eventType === "subscribe") {
-                console.log("subscribed");
+                console.log("subscribed to", stockName);
                 if (!subscribedFolks[stockName]) {
                     subscribedFolks[stockName] = new Set();
+                    // Subscribe to Redis channel only once per stock
+                    yield subscriber.subscribe(stockName, (message) => {
+                        console.log("redis message for", stockName);
+                        if (subscribedFolks[stockName]) {
+                            subscribedFolks[stockName].forEach(client => {
+                                if (client.readyState === ws_1.WebSocket.OPEN) {
+                                    try {
+                                        client.send(message);
+                                    }
+                                    catch (err) {
+                                        console.error("Failed to send to client:", err);
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
                 subscribedFolks[stockName].add(socket);
-                console.log(stockName);
-                yield subscriber.subscribe(stockName, (message) => {
-                    console.log(message);
-                    if (subscribedFolks[stockName]) {
-                        subscribedFolks[stockName].forEach(client => {
-                            if (client.readyState === ws_1.WebSocket.OPEN) {
-                                client.send(message);
-                            }
-                        });
-                    }
-                });
             }
             else if (eventType === "unsubscribe") {
                 if (subscribedFolks[stockName] && subscribedFolks[stockName].has(socket)) {
-                    console.log("unsubscribe");
+                    console.log("unsubscribe from", stockName);
                     subscribedFolks[stockName].delete(socket);
+                    if (subscribedFolks[stockName].size === 0) {
+                        subscriber.unsubscribe(stockName);
+                        delete subscribedFolks[stockName];
+                    }
                 }
             }
         });
     });
     socket.send("connection established");
     socket.on("close", () => {
-        socket.send("connection lost");
+        // Clean up this socket from all subscriptions
+        for (const stockName in subscribedFolks) {
+            if (subscribedFolks[stockName].has(socket)) {
+                subscribedFolks[stockName].delete(socket);
+                if (subscribedFolks[stockName].size === 0) {
+                    subscriber.unsubscribe(stockName);
+                    delete subscribedFolks[stockName];
+                }
+            }
+        }
     });
 });
