@@ -4,7 +4,7 @@ import {
   IoWalletOutline,
 } from "react-icons/io5";
 import { HiOutlineBriefcase } from "react-icons/hi2";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { getStockBalance } from "../services/api";
