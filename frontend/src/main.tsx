@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <UserProvider>
-        <div className="min-h-screen bg-bg">
+        <div className="min-h-screen">
           <Navbar />
           <App />
           <Footer />

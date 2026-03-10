@@ -1,6 +1,4 @@
 import trades from "../assets/trades.avif";
-import coma from "../assets/coma.avif";
-import { Button } from "../utils/buttons";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "./OptimizedImage";
 
@@ -20,58 +18,60 @@ export const TradeCard = ({
   noPrice,
 }: TradeCardType) => {
   const navigate = useNavigate();
+  const yesPct = Math.round((yesPrice / 10) * 100);
 
   return (
     <div
       onClick={() => navigate(`/event-details/${stockSymbol}`)}
-      className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-all duration-200 cursor-pointer group"
+      className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-card hover-lift hover:shadow-card-hover transition-all duration-200 cursor-pointer group"
     >
-      <span className="flex items-center text-xs text-slate-400 font-medium">
-        <OptimizedImage
-          className="mr-1.5 opacity-60"
-          width={14}
-          height={14}
-          src={trades}
-          alt="trades"
-        />
-        0 traders
-      </span>
-
-      <div className="flex items-center gap-3.5 mt-3">
+      <div className="flex items-center gap-3.5">
         <OptimizedImage
           className="rounded-xl flex-shrink-0"
-          width={56}
-          height={56}
+          width={52}
+          height={52}
           src={symbolAvatar(stockSymbol)}
           alt={stockSymbol}
         />
-        <h2 className="text-base font-semibold text-slate-800 leading-snug group-hover:text-slate-950 transition-colors">
-          {stockSymbol}
-        </h2>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <OptimizedImage
+              className="opacity-50"
+              width={12}
+              height={12}
+              src={trades}
+              alt="trades"
+            />
+            <span className="text-[11px] text-slate-400 font-medium">0 traders</span>
+          </div>
+          <h2 className="text-[15px] font-semibold text-slate-800 leading-snug mt-0.5 group-hover:text-slate-950 transition-colors">
+            {stockSymbol}
+          </h2>
+        </div>
       </div>
 
-      <span className="flex items-center text-slate-400 text-xs mt-3.5">
-        <OptimizedImage
-          className="object-contain opacity-50 mr-1"
-          width={13}
-          height={13}
-          src={coma}
-          alt="coma"
-        />
-        Trade on {stockSymbol}
-      </span>
+      {/* Probability bar */}
+      <div className="flex items-center gap-2.5 mt-4">
+        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full bg-yes transition-all"
+            style={{ width: `${yesPct}%` }}
+          />
+        </div>
+        <span className="text-[11px] font-bold text-yes">{yesPct}%</span>
+      </div>
 
       <div className="flex mt-4 gap-2">
-        <Button
-          text={"Yes"}
-          price={yesPrice}
-          customClasses={"bg-yes-light text-yes w-1/2 hover:bg-yes-mid"}
-        />
-        <Button
-          text={"No"}
-          price={noPrice}
-          customClasses={"bg-no-light text-no w-1/2 hover:bg-no-mid"}
-        />
+        <button
+          className="flex-1 min-w-0 rounded-xl text-sm font-bold py-2.5 px-4 cursor-pointer transition-all bg-yes-light text-yes hover:bg-yes-mid active:scale-[0.98]"
+        >
+          Yes ₹{yesPrice}
+        </button>
+        <button
+          className="flex-1 min-w-0 rounded-xl text-sm font-bold py-2.5 px-4 cursor-pointer transition-all bg-no-light text-no hover:bg-no-mid active:scale-[0.98]"
+        >
+          No ₹{noPrice}
+        </button>
       </div>
     </div>
   );

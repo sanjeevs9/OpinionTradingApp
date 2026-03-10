@@ -1,5 +1,4 @@
 import logo from "../assets/probo.avif";
-import profile from "../assets/profile.avif";
 import { GoHome } from "react-icons/go";
 import {
   IoWalletOutline,
@@ -25,11 +24,24 @@ export const Navbar = () => {
           <img className="h-7" src={logo} alt="Probo" decoding="async" />
         </Link>
 
-        <div className="flex items-center gap-6">
-          <Link to="/" className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg hover:bg-slate-100 transition-colors">
+        <div className="flex items-center gap-5">
+          <Link
+            to="/"
+            className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg hover:bg-slate-100 transition-colors"
+          >
             <GoHome size={20} className="text-slate-600" />
           </Link>
-          <a href="/admin" className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg hover:bg-slate-100 transition-colors" title="Admin">
+          <Link
+            to="/events"
+            className="hidden md:flex items-center text-sm font-medium text-slate-600 px-4 py-2 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          >
+            Events
+          </Link>
+          <a
+            href="/admin"
+            className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg hover:bg-slate-100 transition-colors"
+            title="Admin"
+          >
             <IoSettingsOutline size={20} className="text-slate-600" />
           </a>
 
@@ -67,13 +79,10 @@ export const Navbar = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-            <img
-              className="w-8 h-8 rounded-full object-cover ring-2 ring-slate-100"
-              src={profile}
-              alt="profile"
-              decoding="async"
-            />
+          <div className="flex items-center gap-2.5 pl-4 border-l border-slate-200">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-600">
+              {userId.slice(0, 2).toUpperCase()}
+            </div>
             <span className="text-xs text-slate-400 font-mono hidden md:block max-w-[72px] truncate" title={userId}>
               {userId.slice(0, 8)}
             </span>

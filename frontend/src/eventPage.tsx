@@ -35,6 +35,8 @@ export const EventPage = () => {
   }, []);
 
   return (
-    <BodyContent symbolCards={symbolCards} loading={loading} />
+    <div className="bg-bg min-h-screen">
+      <BodyContent symbolCards={symbolCards} loading={loading} />
+    </div>
   );
 };
