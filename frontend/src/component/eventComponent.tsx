@@ -1,7 +1,4 @@
 import { RoutingCompo } from "../utils/routingComp";
-function symbolAvatar(seed: string) {
-  return `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}&size=100&backgroundColor=f1f5f9`;
-}
 import { useState, useEffect } from "react";
 import { OptimizedImage } from "./OptimizedImage";
 import { PriceTable } from "./pricingTable";
@@ -13,6 +10,7 @@ import { getOrderbook } from "../services/api";
 import { subscribeToOrderbook, unsubscribeFromOrderbook } from "../services/websocket";
 import { orderbookSideToPriceLevels } from "../utils/price";
 import type { Orderbook } from "../types";
+import { symbolIconMap } from "../db/data";
 
 const navigationBar = [
   { id: 1, title: "Order book", value: "orderbook" },
@@ -93,16 +91,21 @@ export const EventsCompo = ({ stockSymbol }: EventsCompoProps) => {
 
           <div className="flex items-center gap-5">
             <OptimizedImage
-              className="rounded-2xl"
+              className="rounded-2xl object-cover"
               width={80}
               height={80}
-              src={symbolAvatar(stockSymbol)}
-              alt={stockSymbol}
+              src={(symbolIconMap as Record<string, any>)[stockSymbol]?.url || `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(stockSymbol)}&size=100&backgroundColor=f1f5f9`}
+              alt={(symbolIconMap as Record<string, any>)[stockSymbol]?.mainTitle || stockSymbol}
               lazy={false}
             />
-            <h1 className="font-display font-bold text-3xl text-slate-900">
-              {stockSymbol}
-            </h1>
+            <div>
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                {(symbolIconMap as Record<string, any>)[stockSymbol]?.mainTitle || stockSymbol}
+              </span>
+              <h1 className="font-display font-bold text-2xl text-slate-900 leading-snug mt-1">
+                {(symbolIconMap as Record<string, any>)[stockSymbol]?.title || stockSymbol}
+              </h1>
+            </div>
           </div>
 
           {/* Navigation */}

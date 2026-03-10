@@ -56,7 +56,7 @@ export const TrendingEvents = () => {
           return (
             <div
               key={sym.id}
-              onClick={() => navigate("/events")}
+              onClick={() => navigate(`/event-details/${sym.seedName}`)}
               className="bg-white rounded-2xl border border-slate-200/60 shadow-card p-4 cursor-pointer hover:shadow-card-hover transition-all duration-200 group"
             >
               <div className="flex items-start gap-3 mb-3">
@@ -123,6 +123,7 @@ export const TrendingEvents = () => {
 // --- Top Movers ---
 
 const topMovers = [...symbols]
+  .filter((s, idx, arr) => arr.findIndex((x) => x.seedName === s.seedName) === idx)
   .map((s) => ({
     ...s,
     spread: Math.abs(parseFloat(s.yesPrice) - parseFloat(s.noPrice)),
@@ -167,7 +168,7 @@ export const TopMovers = () => {
           {topMovers.map((s) => (
             <div
               key={s.id}
-              onClick={() => navigate("/events")}
+              onClick={() => navigate(`/event-details/${s.seedName}`)}
               className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors"
             >
               <OptimizedImage className="rounded-lg flex-shrink-0 object-cover" width={32} height={32} src={s.url} alt={s.mainTitle} />
@@ -204,7 +205,7 @@ export const PopularInSports = () => {
           return (
             <div
               key={sym.id}
-              onClick={() => navigate("/events")}
+              onClick={() => navigate(`/event-details/${sym.seedName}`)}
               className="min-w-[260px] max-w-[260px] bg-white rounded-2xl border border-slate-200/60 shadow-card p-4 flex-shrink-0 cursor-pointer hover:shadow-card-hover transition-all duration-200"
             >
               <div className="flex items-center gap-3 mb-3">

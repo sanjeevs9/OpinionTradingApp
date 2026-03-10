@@ -1,10 +1,7 @@
 import trades from "../assets/trades.avif";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "./OptimizedImage";
-
-function symbolAvatar(seed: string) {
-  return `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}&size=70&backgroundColor=f1f5f9`;
-}
+import { symbolIconMap } from "../db/data";
 
 interface TradeCardType {
   stockSymbol: string;
@@ -19,6 +16,7 @@ export const TradeCard = ({
 }: TradeCardType) => {
   const navigate = useNavigate();
   const yesPct = Math.round((yesPrice / 10) * 100);
+  const iconInfo = (symbolIconMap as Record<string, any>)[stockSymbol];
 
   return (
     <div
@@ -27,11 +25,11 @@ export const TradeCard = ({
     >
       <div className="flex items-center gap-3.5">
         <OptimizedImage
-          className="rounded-xl flex-shrink-0"
+          className="rounded-xl flex-shrink-0 object-cover"
           width={52}
           height={52}
-          src={symbolAvatar(stockSymbol)}
-          alt={stockSymbol}
+          src={iconInfo?.url || `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(stockSymbol)}&size=70&backgroundColor=f1f5f9`}
+          alt={iconInfo?.mainTitle || stockSymbol}
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -42,10 +40,10 @@ export const TradeCard = ({
               src={trades}
               alt="trades"
             />
-            <span className="text-[11px] text-slate-400 font-medium">0 traders</span>
+            <span className="text-[11px] text-slate-400 font-medium">{iconInfo?.traders ? `${Number(iconInfo.traders).toLocaleString("en-IN")} traders` : "0 traders"}</span>
           </div>
           <h2 className="text-[15px] font-semibold text-slate-800 leading-snug mt-0.5 group-hover:text-slate-950 transition-colors">
-            {stockSymbol}
+            {iconInfo?.title || stockSymbol}
           </h2>
         </div>
       </div>

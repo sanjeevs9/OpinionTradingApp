@@ -169,50 +169,145 @@ function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function clampPrice(p) {
-    return Math.max(10, Math.min(990, Math.round(p / 10) * 10));
+    return Math.max(50, Math.min(950, Math.round(p / 50) * 50));
 }
 function generateOrders(stockSymbol, botUsers) {
-    let fairPrice = 500 + randInt(-50, 50);
+    let fairPrice = clampPrice(500 + randInt(-1, 1) * 50);
     let orderCount = 0;
+    // BUY YES below fair → creates NO orders above (1000-fair)
+    // BUY NO below (1000-fair) → creates YES orders above fair
+    // This prevents orders from matching each other
     for (let round = 0; round < 5; round++) {
-        // Bids: 3 buy YES orders below fair price
+        // YES bids below fair price
         for (let i = 0; i < 3; i++) {
-            const price = clampPrice(normalRandom(fairPrice - 40, 30));
+            const price = clampPrice(fairPrice - randInt(1, 4) * 50);
             const quantity = randInt(1, 15);
             const userId = botUsers[randInt(0, botUsers.length - 1)];
             queueFireAndForget("/order/buy", { userId, stockSymbol, quantity, price, stockType: "yes" });
             orderCount++;
         }
-        // Asks: 3 buy NO orders (appears as YES sell side)
+        // NO bids below noFair price
+        const noFair = 1000 - fairPrice;
         for (let i = 0; i < 3; i++) {
-            const noPrice = clampPrice(normalRandom((1000 - fairPrice) - 40, 30));
+            const noPrice = clampPrice(noFair - randInt(1, 4) * 50);
             const quantity = randInt(1, 15);
             const userId = botUsers[randInt(0, botUsers.length - 1)];
             queueFireAndForget("/order/buy", { userId, stockSymbol, quantity, price: noPrice, stockType: "no" });
             orderCount++;
         }
-        // Crossing trades: 1-2 aggressive orders that cross the spread
-        const crossCount = randInt(1, 2);
-        for (let i = 0; i < crossCount; i++) {
-            const userId = botUsers[randInt(0, botUsers.length - 1)];
-            if (Math.random() > 0.5) {
-                // Aggressive YES buy at/above fair
-                const price = clampPrice(fairPrice + randInt(0, 20));
-                queueFireAndForget("/order/buy", { userId, stockSymbol, quantity: randInt(1, 5), price, stockType: "yes" });
-            }
-            else {
-                // Aggressive NO buy at/above complement
-                const price = clampPrice((1000 - fairPrice) + randInt(0, 20));
-                queueFireAndForget("/order/buy", { userId, stockSymbol, quantity: randInt(1, 5), price, stockType: "no" });
-            }
-            orderCount++;
-        }
-        // Price drift
-        fairPrice += randInt(-15, 15);
-        fairPrice = Math.max(100, Math.min(900, fairPrice));
+        // Price drift in steps of 50
+        fairPrice += randInt(-1, 1) * 50;
+        fairPrice = Math.max(150, Math.min(850, fairPrice));
     }
     return orderCount;
 }
+// --- Seed All Events ---
+const seedSymbols = [
+    { name: "INDvsNZ", yesBase: 250 },
+    { name: "UEL", yesBase: 600 },
+    { name: "YouTube", yesBase: 900 },
+    { name: "Bitcoin", yesBase: 300 },
+    { name: "NBA", yesBase: 500 },
+    { name: "PATvTAM_KABBADI", yesBase: 700 },
+    { name: "PAKvsENG", yesBase: 500 },
+    { name: "BLRvsPUN_KABBADI", yesBase: 300 },
+    { name: "ISL", yesBase: 750 },
+    { name: "BREAKING_NEWS", yesBase: 450 },
+    { name: "Weather", yesBase: 450 },
+    { name: "STOCKS_JPY", yesBase: 650 },
+    { name: "Politics", yesBase: 850 },
+    { name: "Esports", yesBase: 450 },
+    { name: "GTA6", yesBase: 300 },
+    { name: "Climate", yesBase: 250 },
+    { name: "BGMI", yesBase: 400 },
+    { name: "TAX_REFUND", yesBase: 800 },
+];
+router.post("/seed", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Create 10 bot users with big balances
+        const botUsers = [];
+        for (let i = 0; i < 10; i++) {
+            const userId = `seed_bot_${i}_${Date.now()}`;
+            yield queueAndWait("/user/create/:userId", { userId });
+            yield queueAndWait("/onramp/inr", { userId, amount: 10000000 }); // 100,000 Rs in paise
+            botUsers.push(userId);
+        }
+        let totalOrders = 0;
+        for (const sym of seedSymbols) {
+            // Create symbol
+            yield queueAndWait("/symbol/create/:stockSymbol", { stockSymbol: sym.name });
+            const fair = sym.yesBase; // in paise (e.g. 250 = ₹2.50)
+            const noFair = 1000 - fair;
+            // ── HOW IT WORKS ──
+            // BUY YES at X (no match) → engine creates NO order at (1000-X)
+            // BUY NO  at Y (no match) → engine creates YES order at (1000-Y)
+            //
+            // To avoid orders matching each other:
+            //   - BUY YES at prices BELOW fair → creates NO orders ABOVE noFair
+            //   - BUY NO at prices BELOW noFair → creates YES orders ABOVE fair
+            //   - The NO buys won't match the high-priced NO orders (engine matches ≤ price)
+            //
+            // Example: INDvsNZ (fair=250, noFair=750)
+            //   BUY YES at 200,150,100 → NO orderbook gets 800,850,900
+            //   BUY NO  at 700,650,600 → YES orderbook gets 300,350,400
+            //   Result: YES side shows ₹3.0,3.5,4.0  |  NO side shows ₹8.0,8.5,9.0
+            // Step 1: BUY YES below fair → populates NO orderbook above noFair
+            for (let step = 1; step <= 6; step++) {
+                const price = clampPrice(fair - step * 50);
+                if (price < 50)
+                    continue;
+                const qty = randInt(5, 25);
+                const userId = botUsers[randInt(0, botUsers.length - 1)];
+                queueFireAndForget("/order/buy", {
+                    userId, stockSymbol: sym.name, quantity: qty, price, stockType: "yes",
+                });
+                totalOrders++;
+            }
+            // Step 2: BUY NO below noFair → populates YES orderbook above fair
+            for (let step = 1; step <= 6; step++) {
+                const price = clampPrice(noFair - step * 50);
+                if (price < 50)
+                    continue;
+                const qty = randInt(5, 25);
+                const userId = botUsers[randInt(0, botUsers.length - 1)];
+                queueFireAndForget("/order/buy", {
+                    userId, stockSymbol: sym.name, quantity: qty, price, stockType: "no",
+                });
+                totalOrders++;
+            }
+            // Step 3: Extra depth at tighter prices (1-2 steps below fair)
+            for (let i = 0; i < 3; i++) {
+                const yesPrice = clampPrice(fair - randInt(1, 2) * 50);
+                const noPrice = clampPrice(noFair - randInt(1, 2) * 50);
+                if (yesPrice >= 50) {
+                    const userId = botUsers[randInt(0, botUsers.length - 1)];
+                    queueFireAndForget("/order/buy", {
+                        userId, stockSymbol: sym.name, quantity: randInt(5, 20), price: yesPrice, stockType: "yes",
+                    });
+                    totalOrders++;
+                }
+                if (noPrice >= 50) {
+                    const userId = botUsers[randInt(0, botUsers.length - 1)];
+                    queueFireAndForget("/order/buy", {
+                        userId, stockSymbol: sym.name, quantity: randInt(5, 20), price: noPrice, stockType: "no",
+                    });
+                    totalOrders++;
+                }
+            }
+        }
+        res.json({
+            message: "Seed complete",
+            symbolsCreated: seedSymbols.length,
+            botsCreated: botUsers.length,
+            totalOrders,
+            symbols: seedSymbols.map(s => s.name),
+        });
+    }
+    catch (err) {
+        console.error("Seed error:", err);
+        res.status(500).json({ error: "Seed failed" });
+    }
+}));
 router.post("/bot", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { stockSymbol } = req.body;

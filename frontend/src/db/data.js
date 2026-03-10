@@ -22,77 +22,29 @@ import datamui from "../assets/datamuni.avif"
 import authbridge from "../assets/authbridge.avif"
 
 
-
 export const events = [
-  {
-    eventId: 1,
-    title: "All Events",
-  },
-  {
-    eventId: 2,
-    title: "Cricket",
-  },
-  {
-    eventId: 3,
-    title: "Crypto",
-  },
-  {
-    eventId: 4,
-    title: "Kabbadi",
-  },
-  {
-    eventId: 5,
-    title: "Economy",
-  },
-  {
-    eventId: 6,
-    title: "News",
-  },
-  {
-    eventId: 7,
-    title: "Election",
-  },
-  {
-    eventId: 9,
-    title: "YouTube",
-  },
-  {
-    eventId: 10,
-    title: "Football",
-  },
-  {
-    eventId: 11,
-    title: "Stocks",
-  },
-  {
-    eventId: 12,
-    title: "Basketball",
-  },
-  {
-    eventId: 13,
-    title: "Motorsport",
-  },
-  {
-    eventId: 14,
-    title: "Tennis",
-  },
-  {
-    eventId: 15,
-    title: "Probo",
-  },
-  {
-    eventId: 16,
-    title: "Sport",
-  },
-  {
-    eventId: 17,
-    title: "Weather",
-  }
+  { eventId: 1, title: "All Events" },
+  { eventId: 2, title: "Cricket" },
+  { eventId: 3, title: "Crypto" },
+  { eventId: 4, title: "Kabbadi" },
+  { eventId: 5, title: "Economy" },
+  { eventId: 6, title: "News" },
+  { eventId: 7, title: "Election" },
+  { eventId: 9, title: "YouTube" },
+  { eventId: 10, title: "Football" },
+  { eventId: 11, title: "Stocks" },
+  { eventId: 12, title: "Basketball" },
+  { eventId: 13, title: "Motorsport" },
+  { eventId: 14, title: "Tennis" },
+  { eventId: 15, title: "Probo" },
+  { eventId: 16, title: "Sport" },
+  { eventId: 17, title: "Weather" }
 ];
 
 export const symbols = [
   {
     id: 1,
+    seedName: "INDvsNZ",
     mainTitle: "INDvsNZ",
     url: ind,
     title: "India to win the 2nd Test vs New Zealand?",
@@ -103,16 +55,18 @@ export const symbols = [
   },
   {
     id: 2,
+    seedName: "UEL",
     mainTitle: "UEL",
     url: uel,
     title: "Bangalore to win against Kerala?",
-    description: "current score: BFC-0 | KBFC-0 | Clock-0’",
+    description: "current score: BFC-0 | KBFC-0 | Clock-0'",
     noPrice: "4.0",
     yesPrice: "6.0",
     traders: "193"
   },
   {
     id: 3,
+    seedName: "YouTube",
     mainTitle: "YouTube",
     url: youtube,
     title: "'Billie Eilish - Birds Of a Feather' video to cross 56.30M views at 08:50 AM?",
@@ -123,6 +77,7 @@ export const symbols = [
   },
   {
     id: 4,
+    seedName: "Bitcoin",
     mainTitle: "Bitcoin",
     url: bitcoin,
     title: "Bitcoin to be priced at 67967.79 USDT or more at 09:00 AM?",
@@ -133,9 +88,10 @@ export const symbols = [
   },
   {
     id: 5,
+    seedName: "NBA",
     mainTitle: "NBA",
     url: nba,
-    title: "Who will win the match between Oklahoma City Thunder vs Denver Nuggets ?",
+    title: "Who will win the match between Oklahoma City Thunder vs Denver Nuggets?",
     description: "(Points (Live): OKC: 58 | DEN: 51)",
     noPrice: "5.0",
     yesPrice: "5.0",
@@ -143,6 +99,7 @@ export const symbols = [
   },
   {
     id: 6,
+    seedName: "PATvTAM_KABBADI",
     mainTitle: "PATvTAM KABBADI",
     url: patvtam,
     title: "Patna to win the kabaddi match against Tamil?",
@@ -153,6 +110,7 @@ export const symbols = [
   },
   {
     id: 7,
+    seedName: "PAKvsENG",
     mainTitle: "PAKvsENG",
     url: pakvseng,
     title: "England to win the 3rd Test vs Pakistan?",
@@ -163,6 +121,7 @@ export const symbols = [
   },
   {
     id: 8,
+    seedName: "BLRvsPUN_KABBADI",
     mainTitle: "BLRvsPUN KABBADI",
     url: blrvpun,
     title: "Pune to win the kabaddi match against Bengaluru?",
@@ -173,6 +132,7 @@ export const symbols = [
   },
   {
     id: 9,
+    seedName: "ISL",
     mainTitle: "ISL",
     url: isl,
     title: "Jamshedpur FC to win the 2024-25 Indian Super League Title?",
@@ -183,7 +143,8 @@ export const symbols = [
   },
   {
     id: 10,
-    mainTitle: "Breking News",
+    seedName: "BREAKING_NEWS",
+    mainTitle: "Breaking News",
     url: breakingnew,
     title: "GRAP Stage 3 to be implemented in Delhi by the end of November?",
     description: "GRAP Stage 3 is implemented when the air quality reaches Severe (AQI 401–450) for continue days.",
@@ -193,6 +154,7 @@ export const symbols = [
   },
   {
     id: 11,
+    seedName: "Weather",
     mainTitle: "Weather",
     url: weather,
     title: "GRAP Stage 3 to be implemented in Delhi by the end of November?",
@@ -203,6 +165,7 @@ export const symbols = [
   },
   {
     id: 12,
+    seedName: "STOCKS_JPY",
     mainTitle: "STOCKS - JPY",
     url: stocks,
     title: "Toyota to be priced at 2583 YEN or more at 10:00 AM?",
@@ -213,6 +176,7 @@ export const symbols = [
   },
   {
     id: 13,
+    seedName: "Politics",
     mainTitle: "Politics",
     url: politics,
     title: "'One nation, One Election' to be implemented by the end of 2024?",
@@ -223,6 +187,7 @@ export const symbols = [
   },
   {
     id: 14,
+    seedName: "Esports",
     mainTitle: "Esports",
     url: esports,
     title: "Fluxo' to win the FFWS Global Finals 2024?",
@@ -233,6 +198,7 @@ export const symbols = [
   },
   {
     id: 15,
+    seedName: "GTA6",
     mainTitle: "Other Games",
     url: esports,
     title: "New GTA 6 trailer to be released by December 31?",
@@ -243,6 +209,7 @@ export const symbols = [
   },
   {
     id: 16,
+    seedName: "Climate",
     mainTitle: "Climate",
     url: climate,
     title: "Will 2024 be recorded as the hottest year on record by NASA?",
@@ -253,6 +220,7 @@ export const symbols = [
   },
   {
     id: 17,
+    seedName: "BGMI",
     mainTitle: "BGMI",
     url: bgmi,
     title: "Will there be a new weapon added in the next 3.5 update In BGMI?",
@@ -263,55 +231,27 @@ export const symbols = [
   },
   {
     id: 18,
-    mainTitle: "INDvsNZ",
-    url: noimage,
-    title: "Will 2024 be recorded as the hottest year on record by NASA?",
-    description: "2023 was the warmest year on record, according to an analysis by NASA.",
-    noPrice: "7.5",
-    yesPrice: "2.5",
-    traders: "155"
-  },
-  {
-    id: 19,
-    mainTitle: "INDvsNZ",
-    url: noimage,
-    title: "Will 2024 be recorded as the hottest year on record by NASA?",
-    description: "2023 was the warmest year on record, according to an analysis by NASA.",
-    noPrice: "7.5",
-    yesPrice: "2.5",
-    traders: "155"
-  },
-  {
-    id: 20,
-    mainTitle: "INDvsNZ",
-    url: noimage,
-    title: "Will 2024 be recorded as the hottest year on record by NASA?",
-    description: "2023 was the warmest year on record, according to an analysis by NASA.",
-    noPrice: "7.5",
-    yesPrice: "2.5",
-    traders: "155"
+    seedName: "TAX_REFUND",
+    mainTitle: "Tax Refund",
+    url: politics,
+    title: "Tax Refund for states to be increased by the 16th Finance Commission?",
+    description: "The 15th Finance Commission had recommended 41% of the tax funds collected by states to be paid to the states.",
+    noPrice: "2.0",
+    yesPrice: "8.0",
+    traders: "505"
   },
 ];
 
+// Map seedName -> icon for use by event details page
+export const symbolIconMap = {};
+symbols.forEach(s => {
+  symbolIconMap[s.seedName] = { url: s.url, title: s.title, mainTitle: s.mainTitle, traders: s.traders };
+});
+
 export const technology = [
-  {
-    icon: firbase,
-    title: "Firebase"
-  },
-  {
-    icon: google,
-    title: "cloude"
-  },
-  {
-    icon: tradingview,
-    title: "TradingView"
-  },
-  {
-    icon: datamui,
-    title: "DataMui"
-  },
-  {
-    icon: authbridge,
-    title: "AuthBridge"
-  }
-]
+  { icon: firbase, title: "Firebase" },
+  { icon: google, title: "Google Cloud" },
+  { icon: tradingview, title: "TradingView" },
+  { icon: datamui, title: "DataMuni" },
+  { icon: authbridge, title: "AuthBridge" }
+];

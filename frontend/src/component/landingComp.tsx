@@ -9,6 +9,7 @@ import {
   IoShieldCheckmark,
   IoArrowForward,
   IoChevronForward,
+  IoChevronDown,
 } from "react-icons/io5";
 import {
   AreaChart,
@@ -124,11 +125,23 @@ const fadeUp = {
   }),
 };
 
-const featuredEvents = symbols.slice(0, 6);
+// Unique symbols only (remove duplicates by seedName)
+const uniqueSymbols = symbols.filter(
+  (sym, idx, arr) => arr.findIndex((s) => s.seedName === sym.seedName) === idx
+);
+
+// Top story is the last one (TAX_REFUND)
+const topStorySymbol = uniqueSymbols.find((s) => s.seedName === "TAX_REFUND") || uniqueSymbols[0];
+
+// Trending = all except the top story
+const trendingSymbols = uniqueSymbols.filter((s) => s.seedName !== topStorySymbol.seedName);
 
 export const LandingComp = () => {
   const [validAge, setValidAge] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
+
+  const visibleTrending = showAll ? trendingSymbols : trendingSymbols.slice(0, 6);
 
   return (
     <div className="bg-bg">
@@ -250,7 +263,7 @@ export const LandingComp = () => {
               </motion.div>
             </div>
 
-            {/* Right - Featured Card */}
+            {/* Right - Featured Card (clickable) */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -259,7 +272,10 @@ export const LandingComp = () => {
             >
               <div className="relative">
                 {/* Main card */}
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-elevated p-5">
+                <div
+                  onClick={() => navigate(`/event-details/${symbols[0].seedName}`)}
+                  className="bg-white rounded-2xl border border-slate-200 shadow-elevated p-5 cursor-pointer hover:shadow-card-hover transition-shadow"
+                >
                   <div className="flex items-center gap-3 mb-4">
                     <OptimizedImage
                       className="rounded-xl"
@@ -314,8 +330,12 @@ export const LandingComp = () => {
                   </div>
                 </div>
 
-                {/* Floating mini cards */}
-                <div className="absolute -right-6 top-6 bg-white rounded-xl border border-slate-200 shadow-card-hover p-3 w-48 animate-float" style={{ animationDelay: '0.5s' }}>
+                {/* Floating mini cards (clickable) */}
+                <div
+                  onClick={() => navigate(`/event-details/${symbols[3].seedName}`)}
+                  className="absolute -right-6 top-6 bg-white rounded-xl border border-slate-200 shadow-card-hover p-3 w-48 animate-float cursor-pointer hover:shadow-elevated transition-shadow"
+                  style={{ animationDelay: '0.5s' }}
+                >
                   <div className="flex items-center gap-2.5">
                     <OptimizedImage className="rounded-lg" width={32} height={32} src={symbols[3].url} alt={symbols[3].mainTitle} lazy={false} />
                     <div className="min-w-0">
@@ -328,7 +348,11 @@ export const LandingComp = () => {
                   </div>
                 </div>
 
-                <div className="absolute -left-6 bottom-12 bg-white rounded-xl border border-slate-200 shadow-card-hover p-3 w-48 animate-float" style={{ animationDelay: '1.5s' }}>
+                <div
+                  onClick={() => navigate(`/event-details/${symbols[6].seedName}`)}
+                  className="absolute -left-6 bottom-12 bg-white rounded-xl border border-slate-200 shadow-card-hover p-3 w-48 animate-float cursor-pointer hover:shadow-elevated transition-shadow"
+                  style={{ animationDelay: '1.5s' }}
+                >
                   <div className="flex items-center gap-2.5">
                     <OptimizedImage className="rounded-lg" width={32} height={32} src={symbols[6].url} alt={symbols[6].mainTitle} lazy={false} />
                     <div className="min-w-0">
@@ -365,8 +389,72 @@ export const LandingComp = () => {
         </div>
       </section>
 
-      {/* ===== FEATURED EVENTS ===== */}
-      <section className="py-14 md:py-16">
+      {/* ===== TOP STORY (clickable) ===== */}
+      <section className="py-10 md:py-14">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-slate-900 mb-1">Top Story</h2>
+          <p className="text-slate-400 mb-6">Featured event with live trading</p>
+
+          <div
+            onClick={() => navigate(`/event-details/${topStorySymbol.seedName}`)}
+            className="bg-white rounded-2xl border border-slate-200/60 shadow-card hover:shadow-card-hover transition-shadow cursor-pointer md:flex overflow-hidden"
+          >
+            <div className="p-6 md:w-1/2">
+              <div className="flex items-start gap-3 mb-4">
+                <OptimizedImage
+                  className="rounded-xl flex-shrink-0"
+                  width={48}
+                  height={48}
+                  src={topStorySymbol.url}
+                  alt={topStorySymbol.mainTitle}
+                />
+                <div>
+                  <span className="text-[10px] font-bold text-yes uppercase tracking-widest">Featured</span>
+                  <h3 className="font-display text-xl font-bold text-slate-900 leading-snug mt-0.5">
+                    {topStorySymbol.title}
+                  </h3>
+                </div>
+              </div>
+              <p className="text-sm text-slate-500 leading-relaxed mb-5">
+                {topStorySymbol.description}
+              </p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-bold text-slate-800">{Number(topStorySymbol.traders).toLocaleString("en-IN")}</p>
+                  <span className="text-xs text-slate-400">Traders</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="min-w-[100px] text-center rounded-xl text-sm font-bold py-2.5 px-5 bg-yes-light text-yes">
+                    Yes ₹{topStorySymbol.yesPrice}
+                  </span>
+                  <span className="min-w-[100px] text-center rounded-xl text-sm font-bold py-2.5 px-5 bg-no-light text-no">
+                    No ₹{topStorySymbol.noPrice}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="md:w-1/2 p-6 flex items-center">
+              <div className="w-full h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={generateMiniChart(topStorySymbol.seedName, parseFloat(topStorySymbol.yesPrice))}>
+                    <defs>
+                      <linearGradient id="top-story-g" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#2563EB" stopOpacity={0.15} />
+                        <stop offset="100%" stopColor="#2563EB" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <YAxis domain={[0, 10]} hide />
+                    <Area type="monotone" dataKey="v" stroke="#2563EB" strokeWidth={2} fill="url(#top-story-g)" dot={false} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== TRENDING EVENTS (clickable, with Show More) ===== */}
+      <section className="pb-14 md:pb-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-8">
             <div>
@@ -385,7 +473,7 @@ export const LandingComp = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featuredEvents.map((sym, i) => {
+            {visibleTrending.map((sym, i) => {
               const chartData = generateMiniChart(sym.mainTitle, parseFloat(sym.yesPrice));
               const yesNum = parseFloat(sym.yesPrice);
               const isYesFavored = yesNum >= 5;
@@ -398,7 +486,7 @@ export const LandingComp = () => {
                   whileInView="visible"
                   viewport={{ once: true, margin: "-40px" }}
                   variants={fadeUp}
-                  onClick={() => navigate("/events")}
+                  onClick={() => navigate(`/event-details/${sym.seedName}`)}
                   className="bg-white rounded-2xl border border-slate-200/60 p-5 cursor-pointer hover-lift hover:shadow-card-hover group"
                 >
                   <div className="flex items-start gap-3 mb-3">
@@ -459,7 +547,20 @@ export const LandingComp = () => {
             })}
           </div>
 
-          <div className="flex justify-center mt-8 md:hidden">
+          {/* Show more / Show less */}
+          {trendingSymbols.length > 6 && (
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="flex items-center gap-2 text-sm font-semibold text-slate-500 border border-slate-200 px-6 py-2.5 rounded-xl cursor-pointer hover:bg-white hover:border-slate-300 transition-all"
+              >
+                {showAll ? "Show less" : `Show more (${trendingSymbols.length - 6} more)`}
+                <IoChevronDown size={14} className={`transition-transform ${showAll ? "rotate-180" : ""}`} />
+              </button>
+            </div>
+          )}
+
+          <div className="flex justify-center mt-4 md:hidden">
             <button
               onClick={() => navigate("/events")}
               className="flex items-center gap-1.5 text-sm font-semibold text-yes cursor-pointer"
@@ -538,14 +639,14 @@ export const LandingComp = () => {
                 <br />your returns
               </h2>
               <p className="text-slate-500 mt-4 leading-relaxed">
-                Think India will win the next match? Buy YES at ₹2.5.
-                If you're right, you get ₹10 per share — a 4x return
+                Think India will win the next match? Buy YES at ₹{symbols[0].yesPrice}.
+                If you're right, you get ₹10 per share — a {Math.round(10 / parseFloat(symbols[0].yesPrice))}x return
                 on your investment.
               </p>
               <div className="mt-8 flex gap-4">
                 <div className="bg-white border border-slate-200 rounded-2xl p-5 flex-1">
                   <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">You invest</p>
-                  <p className="font-display text-2xl font-bold text-slate-900 mt-1">₹2.50</p>
+                  <p className="font-display text-2xl font-bold text-slate-900 mt-1">₹{symbols[0].yesPrice}</p>
                   <p className="text-xs text-slate-400 mt-0.5">per YES share</p>
                 </div>
                 <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex-1">
@@ -562,7 +663,10 @@ export const LandingComp = () => {
               viewport={{ once: true }}
               className="flex justify-center"
             >
-              <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200 shadow-elevated p-6">
+              <div
+                onClick={() => navigate(`/event-details/${symbols[0].seedName}`)}
+                className="w-full max-w-sm bg-white rounded-2xl border border-slate-200 shadow-elevated p-6 cursor-pointer hover:shadow-card-hover transition-shadow"
+              >
                 <div className="flex items-center gap-3 mb-5">
                   <OptimizedImage
                     className="rounded-xl"
@@ -586,7 +690,7 @@ export const LandingComp = () => {
                 </div>
                 <div className="bg-slate-50 rounded-xl p-4 flex justify-around">
                   <div className="text-center">
-                    <p className="text-sm font-bold text-slate-800">₹2.50</p>
+                    <p className="text-sm font-bold text-slate-800">₹{symbols[0].yesPrice}</p>
                     <p className="text-[11px] text-slate-400">You put</p>
                   </div>
                   <div className="w-px bg-slate-200" />
