@@ -23,13 +23,11 @@ export const BuySellCard = ({ stockSymbol, orderbook }: BuySellCardProps) => {
 
   const { userId, balance, refreshBalance, addFunds } = useUser();
 
-  // Derive best prices from orderbook
   const bestYesPaise = getBestPrice(orderbook?.yes);
   const bestNoPaise = getBestPrice(orderbook?.no);
   const bestYesPrice = bestYesPaise ? paiseToRupees(bestYesPaise) : 5;
   const bestNoPrice = bestNoPaise ? paiseToRupees(bestNoPaise) : 5;
 
-  // Set price to the lowest available price when orderbook loads or tab switches
   useEffect(() => {
     const bestPaise = buyTab === "yes" ? bestYesPaise : bestNoPaise;
     if (bestPaise && !initializedRef.current[buyTab]) {
@@ -38,7 +36,6 @@ export const BuySellCard = ({ stockSymbol, orderbook }: BuySellCardProps) => {
     }
   }, [bestYesPaise, bestNoPaise, buyTab]);
 
-  // Available qty at selected price
   const selectedSide = buyTab === "yes" ? orderbook?.yes : orderbook?.no;
   const availableQty = getCumulativeQty(selectedSide, rupeesToPaise(price));
 
@@ -65,217 +62,180 @@ export const BuySellCard = ({ stockSymbol, orderbook }: BuySellCardProps) => {
   };
 
   return (
-    <>
-      <div className="border sticky top-20 rounded-xl xl:w-1/3 w-full flex flex-col justify-center p-5 h-fit bg-white mt-24">
-        <div
-          onClick={(e: any) => {
-            if (e.target.nodeName === "BUTTON") {
-              const value = e.target.getAttribute("value") as "yes" | "no";
-              setBuyTab(value);
-              const bestPaise = value === "yes" ? bestYesPaise : bestNoPaise;
-              if (bestPaise) {
-                setPrice(paiseToRupees(bestPaise));
-              }
-            }
-          }}
-          className="w-full rounded-3xl flex border-2 h-10 items-center justify-around font-bold text-sm"
-        >
-          <button
-            value="yes"
-            className={`w-1/2 rounded-2xl h-full cursor-pointer ${
-              buyTab === "yes"
-                ? "bg-[#197BFF] text-white"
-                : "bg-white text-black"
-            } `}
-          >
-            YES ₹{bestYesPrice}
-          </button>
-          <button
-            value="no"
-            className={`w-1/2 rounded-2xl h-full cursor-pointer ${
-              buyTab === "no"
-                ? "bg-[#E6675A] text-white"
-                : "bg-white text-black"
-            } `}
-          >
-            NO ₹{bestNoPrice}
-          </button>
-        </div>
-        <div className="border w-24 rounded-2xl px-2 flex justify-center py-1 font-bold mt-4">
-          Set price
-        </div>
-        <div className="relative bg-white border mt-5 border-gray-300 p-6 rounded-xl w-full">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <h2 className="text-lg font-bold">Price</h2>
-              <span className="text-sm text-gray-400">{availableQty} qty available</span>
-            </div>
-            <div
-              onClick={(e: any) => {
-                if (e.target.nodeName === "BUTTON") {
-                  let value = e.target.value;
-                  if (value === "+" && price < 10) {
-                    setPrice((pre) => (pre += 0.5));
-                  }
-                  if (value === "-" && price > 0.5) {
-                    setPrice((pre) => (pre -= 0.5));
-                  }
-                }
-              }}
-              className="w-36 flex justify-between rounded-lg border p-1"
-            >
-              <button
-                value="-"
-                className={`border rounded w-1/5 cursor-pointer ${
-                  price === 0.5 ? "text-gray-300" : "text-[#9EC2FC]"
-                } bg-[#F6F6F6]`}
-              >
-                -
-              </button>
-              <span className="font-bold text-lg">₹{price}</span>
-              <button
-                value="+"
-                className={`border rounded w-1/5 cursor-pointer ${
-                  price === 10 ? "text-gray-300" : "text-[#9EC2FC]"
-                } bg-[#F6F6F6]`}
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mt-10">
-              <div className="flex flex-col">
-                <h2 className="text-lg font-bold flex items-center gap-1">
-                  Quantity <LuSettings className="mt-1" size={17} />
-                </h2>
-              </div>
-              <div
-                onClick={(e: any) => {
-                  if (e.target.nodeName === "BUTTON") {
-                    let value = e.target.value;
-                    if (value === "+" && quantity < 5) {
-                      setQuantity((pre) => (pre += 1));
-                    }
-                    if (value === "-" && quantity > 1) {
-                      setQuantity((pre) => (pre -= 1));
-                    }
-                  }
-                }}
-                className="w-36 flex justify-between rounded-lg border p-1"
-              >
-                <button
-                  value="-"
-                  className={`border rounded w-1/5 cursor-pointer ${
-                    quantity === 1 ? "text-gray-300" : "text-[#9EC2FC]"
-                  } bg-[#F6F6F6]`}
-                >
-                  -
-                </button>
-                <span className="font-bold text-lg">{quantity}</span>
-                <button
-                  value="+"
-                  className={`border rounded w-1/5 cursor-pointer ${
-                    quantity === 5 ? "text-gray-300" : "text-[#9EC2FC]"
-                  } bg-[#F6F6F6]`}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-around mt-10">
-            <span className="flex flex-col items-center">
-              <span className="font-bold text-lg"> ₹{price * quantity}</span>
-              <span className="text-md text-[#ACACAC] font-light">You put</span>
-            </span>
-            <span className="flex flex-col items-center">
-              <span className="font-bold text-lg text-green-700">
-                {" "}
-                ₹{10 * quantity}
-              </span>
-              <span className="text-md text-[#ACACAC] font-light">You get</span>
-            </span>
-          </div>
-          <div className="absolute -top-3 left-9 w-5 h-5 bg-white border-l border-t border-gray-300 rotate-45"></div>
-        </div>
-        {/* advanced options */}
-        <div className="flex flex-col items-center justify-center mt-4">
-          {advancedOption && (
-            <div className="border rounded-xl w-full mb-2">
-              <div className="border-b flex justify-between p-3">
-                <div className="flex justify-start gap-4 items-center w-1/2">
-                  <span className="border bg-[#ECF7F1] p-2 rounded-md text-xs font-bold text-[#05935E]">
-                    BP
-                  </span>
-                  <h3 className="font-bold">Book Profit</h3>
-                </div>
-                <Switch />
-              </div>
-              <div className="border-b flex justify-between p-3">
-                <div className="flex justify-start gap-4 items-center w-1/2">
-                  <span className="border bg-[#FDF3F2] p-2 rounded-md text-xs font-bold text-[#DC331D]">
-                    SL
-                  </span>
-                  <h3 className="font-bold">Stop Loss</h3>
-                </div>
-                <Switch />
-              </div>
-              <div className="p-3 flex justify-between">
-                <div className="flex justify-start gap-4 items-center w-1/2">
-                  <span className="border bg-[#E8F2FE] p-2 rounded-md text-xs font-bold text-[#187AFD]">
-                    AC
-                  </span>
-                  <h3 className="font-bold">Auto Cancel</h3>
-                </div>
-                <Switch />
-              </div>
-            </div>
-          )}
-          <button
-            onClick={() => setAdvancedOption(!advancedOption)}
-            className="flex text-[#808080] text-sm items-center gap-2 cursor-pointer"
-          >
-            Advanced Options
-            <IoIosArrowDown
-              size={20}
-              className={`${advancedOption && "rotate-180"}`}
-            />
-          </button>
-        </div>
-
-        {!hasEnoughBalance && (
-          <div className="flex justify-around mt-4">
-            <div className="flex gap-5">
-              <img className="object-contain" src={errorIcon} alt="low_balance" />
-              <div className="flex flex-col">
-                <h3 className="text-sm font-semibold mb-1">Insufficient balance</h3>
-                <span className="text-xs font-light">Click to add funds</span>
-              </div>
-            </div>
-            <button
-              onClick={() => addFunds(5000)}
-              className="rounded-lg p-2 px-4 text-white bg-black font-semibold cursor-pointer"
-            >
-              Recharge
-            </button>
-          </div>
-        )}
-
+    <div className="border border-slate-200/60 sticky top-20 rounded-2xl xl:w-1/3 w-full flex flex-col p-5 h-fit bg-white shadow-card mt-10 xl:mt-0">
+      {/* YES/NO toggle */}
+      <div className="w-full rounded-xl flex bg-slate-100 p-1 h-11 items-center font-semibold text-sm">
         <button
-          disabled={!hasEnoughBalance || placing}
-          onClick={handlePlaceOrder}
-          className={`w-full p-4 text-white rounded-lg mt-4 font-bold ${
-            hasEnoughBalance
-              ? buyTab === "yes"
-                ? "bg-[#197BFF] cursor-pointer"
-                : "bg-[#E6675A] cursor-pointer"
-              : "bg-[#E3E3E3]"
+          onClick={() => {
+            setBuyTab("yes");
+            if (bestYesPaise) setPrice(paiseToRupees(bestYesPaise));
+          }}
+          className={`w-1/2 rounded-lg h-full cursor-pointer transition-all duration-200 ${
+            buyTab === "yes"
+              ? "bg-yes text-white shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
           }`}
         >
-          {placing ? "Placing..." : "Place order"}
+          YES ₹{bestYesPrice}
+        </button>
+        <button
+          onClick={() => {
+            setBuyTab("no");
+            if (bestNoPaise) setPrice(paiseToRupees(bestNoPaise));
+          }}
+          className={`w-1/2 rounded-lg h-full cursor-pointer transition-all duration-200 ${
+            buyTab === "no"
+              ? "bg-no text-white shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          NO ₹{bestNoPrice}
         </button>
       </div>
-    </>
+
+      <span className="inline-flex items-center text-xs font-semibold text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 mt-4 w-fit">
+        Set price
+      </span>
+
+      {/* Price/Qty card */}
+      <div className="relative bg-white border border-slate-200 mt-4 p-5 rounded-xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-bold text-slate-800">Price</h2>
+            <span className="text-xs text-slate-400">{availableQty} qty available</span>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-slate-200 p-0.5">
+            <button
+              onClick={() => price > 0.5 && setPrice(p => p - 0.5)}
+              className={`w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-colors ${
+                price === 0.5 ? "text-slate-300" : "text-yes hover:bg-slate-50"
+              } bg-slate-50`}
+            >
+              -
+            </button>
+            <span className="font-bold text-sm w-14 text-center">₹{price}</span>
+            <button
+              onClick={() => price < 10 && setPrice(p => p + 0.5)}
+              className={`w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-colors ${
+                price === 10 ? "text-slate-300" : "text-yes hover:bg-slate-50"
+              } bg-slate-50`}
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-8">
+          <div>
+            <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1">
+              Quantity <LuSettings className="text-slate-400" size={14} />
+            </h2>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-slate-200 p-0.5">
+            <button
+              onClick={() => quantity > 1 && setQuantity(q => q - 1)}
+              className={`w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-colors ${
+                quantity === 1 ? "text-slate-300" : "text-yes hover:bg-slate-50"
+              } bg-slate-50`}
+            >
+              -
+            </button>
+            <span className="font-bold text-sm w-14 text-center">{quantity}</span>
+            <button
+              onClick={() => quantity < 5 && setQuantity(q => q + 1)}
+              className={`w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-colors ${
+                quantity === 5 ? "text-slate-300" : "text-yes hover:bg-slate-50"
+              } bg-slate-50`}
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-around mt-8 py-4 bg-slate-50 -mx-5 -mb-5 rounded-b-xl border-t border-slate-100">
+          <span className="flex flex-col items-center">
+            <span className="font-bold text-base text-slate-800">₹{price * quantity}</span>
+            <span className="text-xs text-slate-400">You put</span>
+          </span>
+          <span className="flex flex-col items-center">
+            <span className="font-bold text-base text-emerald-600">₹{10 * quantity}</span>
+            <span className="text-xs text-slate-400">You get</span>
+          </span>
+        </div>
+
+        <div className="absolute -top-2.5 left-9 w-4 h-4 bg-white border-l border-t border-slate-200 rotate-45"></div>
+      </div>
+
+      {/* Advanced options */}
+      <div className="flex flex-col items-center mt-4">
+        {advancedOption && (
+          <div className="border border-slate-200 rounded-xl w-full mb-3 overflow-hidden">
+            <div className="border-b border-slate-100 flex justify-between p-3.5">
+              <div className="flex items-center gap-3">
+                <span className="bg-emerald-50 text-emerald-600 p-1.5 rounded-md text-xs font-bold">BP</span>
+                <h3 className="font-semibold text-sm text-slate-700">Book Profit</h3>
+              </div>
+              <Switch />
+            </div>
+            <div className="border-b border-slate-100 flex justify-between p-3.5">
+              <div className="flex items-center gap-3">
+                <span className="bg-red-50 text-red-600 p-1.5 rounded-md text-xs font-bold">SL</span>
+                <h3 className="font-semibold text-sm text-slate-700">Stop Loss</h3>
+              </div>
+              <Switch />
+            </div>
+            <div className="flex justify-between p-3.5">
+              <div className="flex items-center gap-3">
+                <span className="bg-blue-50 text-blue-600 p-1.5 rounded-md text-xs font-bold">AC</span>
+                <h3 className="font-semibold text-sm text-slate-700">Auto Cancel</h3>
+              </div>
+              <Switch />
+            </div>
+          </div>
+        )}
+        <button
+          onClick={() => setAdvancedOption(!advancedOption)}
+          className="flex text-slate-400 text-sm items-center gap-1.5 cursor-pointer hover:text-slate-600 transition-colors"
+        >
+          Advanced Options
+          <IoIosArrowDown
+            size={16}
+            className={`transition-transform duration-200 ${advancedOption ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
+
+      {!hasEnoughBalance && (
+        <div className="flex items-center justify-between mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+          <div className="flex items-center gap-3">
+            <img className="object-contain w-5 h-5" src={errorIcon} alt="low_balance" />
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">Insufficient balance</h3>
+              <span className="text-xs text-slate-400">Click to add funds</span>
+            </div>
+          </div>
+          <button
+            onClick={() => addFunds(5000)}
+            className="rounded-lg py-2 px-4 text-white bg-slate-900 text-sm font-semibold cursor-pointer hover:bg-slate-800 transition-colors"
+          >
+            Recharge
+          </button>
+        </div>
+      )}
+
+      <button
+        disabled={!hasEnoughBalance || placing}
+        onClick={handlePlaceOrder}
+        className={`w-full py-3.5 text-white rounded-xl mt-4 font-bold text-sm transition-all ${
+          hasEnoughBalance
+            ? buyTab === "yes"
+              ? "bg-yes cursor-pointer hover:bg-blue-700 active:scale-[0.99]"
+              : "bg-no cursor-pointer hover:bg-rose-700 active:scale-[0.99]"
+            : "bg-slate-200 text-slate-400 cursor-not-allowed"
+        }`}
+      >
+        {placing ? "Placing..." : "Place order"}
+      </button>
+    </div>
   );
 };

@@ -14,7 +14,6 @@ export const AdminPage = () => {
   const fetchSymbols = async () => {
     try {
       const orderbooks = await getOrderbooks();
-      console.log("orderbooks", orderbooks);
       setSymbols(Object.keys(orderbooks));
     } catch {
       console.error("Failed to fetch symbols");
@@ -46,71 +45,67 @@ export const AdminPage = () => {
   };
 
   return (
-    <>
-      <div className="max-w-2xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Admin Panel</h1>
+    <div className="max-w-2xl mx-auto px-6 py-8">
+      <h1 className="font-display text-2xl font-bold text-slate-900 mb-6">Admin Panel</h1>
 
-        {/* Create Symbol */}
-        <div className="bg-white rounded-lg shadow p-5 mb-6">
-          <h2 className="text-lg font-semibold mb-3">Create Symbol</h2>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={symbolName}
-              onChange={(e) => setSymbolName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              placeholder="e.g. BTC_USD_25"
-              className="border rounded px-3 py-2 text-sm flex-1"
-            />
-            <button
-              onClick={handleCreate}
-              disabled={creating || !symbolName.trim()}
-              className="bg-black text-white text-sm font-semibold rounded px-4 py-2 disabled:opacity-50 cursor-pointer"
-            >
-              {creating ? "Creating..." : "Create"}
-            </button>
-          </div>
-          {message && (
-            <p
-              className={`mt-3 text-sm font-medium ${
-                message.type === "success" ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {message.text}
-            </p>
-          )}
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-card p-6 mb-6">
+        <h2 className="text-base font-semibold text-slate-800 mb-3">Create Symbol</h2>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={symbolName}
+            onChange={(e) => setSymbolName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+            placeholder="e.g. BTC_USD_25"
+            className="border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-300 transition-all placeholder:text-slate-300"
+          />
+          <button
+            onClick={handleCreate}
+            disabled={creating || !symbolName.trim()}
+            className="bg-slate-900 text-white text-sm font-semibold rounded-lg px-5 py-2.5 disabled:opacity-40 cursor-pointer hover:bg-slate-800 transition-colors"
+          >
+            {creating ? "Creating..." : "Create"}
+          </button>
         </div>
-
-        {/* Existing Symbols */}
-        <div className="bg-white rounded-lg shadow p-5">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-lg font-semibold">Existing Symbols</h2>
-            <button
-              onClick={fetchSymbols}
-              className="text-sm text-gray-500 hover:text-black cursor-pointer"
-            >
-              Refresh
-            </button>
-          </div>
-          {symbols.length === 0 ? (
-            <p className="text-sm text-gray-400">No symbols yet</p>
-          ) : (
-            <ul className="divide-y">
-              {symbols.map((sym) => (
-                <li key={sym} className="py-2 flex justify-between items-center">
-                  <span className="font-mono text-sm">{sym}</span>
-                  <Link
-                    to={`/event-details/${sym}`}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    View
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {message && (
+          <p
+            className={`mt-3 text-sm font-medium ${
+              message.type === "success" ? "text-emerald-600" : "text-red-500"
+            }`}
+          >
+            {message.text}
+          </p>
+        )}
       </div>
-    </>
+
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-card p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-base font-semibold text-slate-800">Existing Symbols</h2>
+          <button
+            onClick={fetchSymbols}
+            className="text-sm text-slate-400 hover:text-slate-700 cursor-pointer transition-colors"
+          >
+            Refresh
+          </button>
+        </div>
+        {symbols.length === 0 ? (
+          <p className="text-sm text-slate-400">No symbols yet</p>
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {symbols.map((sym) => (
+              <li key={sym} className="py-3 flex justify-between items-center">
+                <span className="font-mono text-sm text-slate-700">{sym}</span>
+                <Link
+                  to={`/event-details/${sym}`}
+                  className="text-sm text-yes font-medium hover:underline"
+                >
+                  View
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 };

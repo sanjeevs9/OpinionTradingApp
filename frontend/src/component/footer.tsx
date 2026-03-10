@@ -3,110 +3,68 @@ import { technology } from "../db/data";
 import { IoBagRemoveOutline } from "react-icons/io5";
 
 export const Footer = () => {
-  const spanClass = "font-bold text-black";
   return (
     <>
-      <div className="p-4 pl-10 pt-10">
-        <hr />
-        <footer className="bg-gray-100 py-10 px-0">
-          <div className="max-w-screen-xl grid grid-cols-1 md:grid-cols-4 gap-10 text-gray-800 mb-5">
+      <div className="max-w-7xl mx-auto px-6 pt-10">
+        <div className="border-t border-slate-200" />
+        <footer className="py-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 text-slate-600 mb-8">
             <div>
-              <h4 className="text-lg font-semibold mb-4">Company</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="hover:underline">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Culture
-                  </a>
-                </li>
+              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Company</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-sm hover:text-slate-900 transition-colors">About Us</a></li>
+                <li><a href="#" className="text-sm hover:text-slate-900 transition-colors">Culture</a></li>
               </ul>
             </div>
-
             <div>
-              <h4 className="text-lg font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="hover:underline">
-                    Help Centre
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Contact Support
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    What's New
-                  </a>
-                </li>
+              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Resources</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-sm hover:text-slate-900 transition-colors">Help Centre</a></li>
+                <li><a href="#" className="text-sm hover:text-slate-900 transition-colors">Contact Support</a></li>
+                <li><a href="#" className="text-sm hover:text-slate-900 transition-colors">What's New</a></li>
               </ul>
             </div>
-
             <div>
-              <h4 className="text-lg font-semibold mb-4">Careers</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="hover:underline">
-                    Open Roles
-                  </a>
-                </li>
+              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Careers</h4>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-sm hover:text-slate-900 transition-colors">Open Roles</a></li>
               </ul>
             </div>
-
             <div>
-              <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="mailto:help@probo.in" className="hover:underline">
-                    help@probo.in
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="mailto:communication@probo.in"
-                    className="hover:underline"
-                  >
-                    communication@probo.in
-                  </a>
-                </li>
+              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Contact Us</h4>
+              <ul className="space-y-2.5">
+                <li><a href="mailto:help@probo.in" className="text-sm hover:text-slate-900 transition-colors">help@probo.in</a></li>
+                <li><a href="mailto:communication@probo.in" className="text-sm hover:text-slate-900 transition-colors">communication@probo.in</a></li>
               </ul>
             </div>
           </div>
-          <div>
-            <hr />
-            <div className="md:flex block w-full">
-              <div className="w-1/2 pt-10">
-                <h1 className="mb-4 font-bold text-ls">Probo Partnerships</h1>
-                <p className="font-light">
-                  Probo’s experience is made possible by our partnerships with
-                  <span className={spanClass}>TradingView</span> (track upcoming
-                  events with Economic Calendar or browse stocks in the
-                  Screener), <span className={spanClass}>Authbridge</span> for
-                  verification technology,{" "}
-                  <span className={spanClass}>DataMuni</span> for data &
-                  analytics,{" "}
-                  <span className={spanClass}>
-                    Google Firebase, Google Cloud
-                  </span>{" "}
-                  & <span className={spanClass}>AWS</span>. Probo is also a
-                  member of <span className={spanClass}>FICCI</span> and{" "}
-                  <span className={spanClass}>ASSOCHAM.</span>
+
+          <div className="border-t border-slate-200 pt-8">
+            <div className="md:flex gap-10">
+              <div className="md:w-1/2">
+                <h5 className="font-bold text-sm text-slate-900 mb-2">Probo Partnerships</h5>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Probo's experience is made possible by our partnerships with{" "}
+                  <strong className="text-slate-700">TradingView</strong> (track upcoming events with Economic Calendar),{" "}
+                  <strong className="text-slate-700">Authbridge</strong> for verification technology,{" "}
+                  <strong className="text-slate-700">DataMuni</strong> for data & analytics,{" "}
+                  <strong className="text-slate-700">Google Firebase, Google Cloud</strong> &{" "}
+                  <strong className="text-slate-700">AWS</strong>. Probo is also a member of{" "}
+                  <strong className="text-slate-700">FICCI</strong> and{" "}
+                  <strong className="text-slate-700">ASSOCHAM</strong>.
                 </p>
               </div>
-              <div className="w-1/2 flex justify-end md:pr-10 mt-5 space-x-4">
+              <div className="md:w-1/2 flex justify-end items-start gap-4 mt-5 md:mt-0">
                 {technology.map((item) => (
                   <img
                     key={item.title}
-                    className="object-contain"
-                    width={60}
-                    height={60}
+                    className="object-contain opacity-60 hover:opacity-100 transition-opacity"
+                    width={48}
+                    height={48}
                     src={item.icon}
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                   />
                 ))}
               </div>
@@ -114,14 +72,16 @@ export const Footer = () => {
           </div>
         </footer>
       </div>
-      <div className="p-6 sticky bottom-0 z-10 md:hidden flex justify-around bg-[#ffff]">
-        <span className="cursor-pointer flex flex-col items-center">
-          <GoHome size={25} className="text-gray-500" />
-          <h2 className="text-gray-500 font-normal">Home</h2>
+
+      {/* Mobile bottom nav */}
+      <div className="p-4 sticky bottom-0 z-10 md:hidden flex justify-around bg-white border-t border-slate-200">
+        <span className="cursor-pointer flex flex-col items-center gap-0.5">
+          <GoHome size={22} className="text-slate-500" />
+          <span className="text-xs text-slate-500">Home</span>
         </span>
-        <span className="cursor-pointer flex flex-col items-center">
-          <IoBagRemoveOutline size={25} className="text-gray-500" />
-          <h2 className="text-gray-500 font-normal">Portfolio</h2>
+        <span className="cursor-pointer flex flex-col items-center gap-0.5">
+          <IoBagRemoveOutline size={22} className="text-slate-500" />
+          <span className="text-xs text-slate-500">Portfolio</span>
         </span>
       </div>
     </>

@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { events } from "../db/data";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import type { SymbolCardData } from "../types";
+import { OptimizedImage } from "./OptimizedImage";
+
 function symbolAvatar(seed: string) {
   return `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}&size=20&backgroundColor=f1f5f9`;
 }
@@ -25,50 +27,46 @@ export const Events = ({ symbolCards }: EventsProps) => {
       sliderRef.current.scrollBy({ left: 700, behavior: "smooth" });
     }
   };
+
   return (
-    <>
-      <div className="p-4 hidden lg:block">
-        <div className="text-sm px-10 font-semibold cursor-pointer border-b-[#E3E3E3] border-b flex justify-between">
-          {events.map((item) => (
-            <button
-              key={item.eventId}
-              onClick={() => setActiveTab(item.eventId)}
-              className={`pb-3 cursor-pointer relative transition-all duration-900 ease-in-out ${
-                activeTab === item.eventId
-                  ? "font-bold text-black"
-                  : "font-normal text-[#575757]"
-              }`}
-            >
-              {item.title}
-              {activeTab === item.eventId && (
-                <span
-                  className="absolute left-0 bottom-0 w-full h-[2px] bg-black
-              transition-transform duration-1000 ease-in-out transform translate-y-[2px]"
-                />
-              )}
-            </button>
-          ))}
-        </div>
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="hidden lg:flex items-center gap-1 border-b border-slate-200 mb-4">
+        {events.map((item) => (
+          <button
+            key={item.eventId}
+            onClick={() => setActiveTab(item.eventId)}
+            className={`px-4 py-3 text-sm relative transition-colors cursor-pointer ${
+              activeTab === item.eventId
+                ? "font-semibold text-slate-900"
+                : "font-medium text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            {item.title}
+            {activeTab === item.eventId && (
+              <span className="absolute left-0 bottom-0 w-full h-0.5 bg-slate-900 rounded-full" />
+            )}
+          </button>
+        ))}
       </div>
 
-      <div className="p-2 px-9 flex">
-        <button onClick={scrollLeft} className="mr-1 cursor-pointer">
-          <IoIosArrowBack size={20} />
+      <div className="flex items-center gap-2 py-3">
+        <button onClick={scrollLeft} className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+          <IoIosArrowBack size={16} className="text-slate-500" />
         </button>
         <div
           ref={sliderRef}
           style={{ scrollBehavior: "smooth" }}
-          className="w-screen overflow-x-scroll scrollbar-hide flex space-x-4"
+          className="flex-1 overflow-x-auto scrollbar-hide flex gap-2"
         >
           {symbolCards.map((card) => (
             <button
               key={card.stockSymbol}
-              className="min-w-fit max-w-xs border bg-white shadow-md rounded-lg p-2 flex gap-2 text-sm font-sans overflow-hidden items-center cursor-pointer"
+              className="min-w-fit border border-slate-200 bg-white shadow-card rounded-lg py-1.5 px-3 flex items-center gap-2 text-sm font-medium text-slate-700 hover:border-slate-300 hover:shadow-card-hover transition-all cursor-pointer"
             >
-              <img
+              <OptimizedImage
                 className="rounded flex-shrink-0"
-                width={20}
-                height={20}
+                width={18}
+                height={18}
                 src={symbolAvatar(card.stockSymbol)}
                 alt={card.stockSymbol}
               />
@@ -76,10 +74,10 @@ export const Events = ({ symbolCards }: EventsProps) => {
             </button>
           ))}
         </div>
-        <button onClick={scrollRight} className="ml-1 cursor-pointer">
-          <IoIosArrowForward size={20} />
+        <button onClick={scrollRight} className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+          <IoIosArrowForward size={16} className="text-slate-500" />
         </button>
       </div>
-    </>
+    </div>
   );
 };

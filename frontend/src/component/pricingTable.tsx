@@ -12,14 +12,10 @@ export const PriceTable = ({ data, qty }: TableType) => {
     <table className="w-full mb-4 text-left">
       <thead>
         <tr>
-          <th className="py-2 text-md font-semibold text-gray-700">PRICE</th>
-          <th className="py-2 px-1 text-md font-light text-gray-700 text-right">
-            QTY AT{" "}
-            <span
-              className={`${
-                qty === "YES" ? "text-[#1A7BFE]" : "text-[#DB2706]"
-              } `}
-            >
+          <th className="py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Price</th>
+          <th className="py-2 px-1 text-xs font-medium text-slate-500 text-right uppercase tracking-wider">
+            Qty at{" "}
+            <span className={qty === "YES" ? "text-yes font-bold" : "text-no font-bold"}>
               {qty}
             </span>
           </th>
@@ -32,14 +28,14 @@ export const PriceTable = ({ data, qty }: TableType) => {
             <tr
               style={{
                 background: `linear-gradient(to left, ${
-                  qty === "YES" ? "#BBD8FE" : "#FFDCDB"
-                } ${widthPercent}%, #ffffff ${0}%)`,
+                  qty === "YES" ? "var(--color-yes-mid)" : "var(--color-no-mid)"
+                } ${widthPercent}%, transparent ${0}%)`,
               }}
               key={index}
-              className={`border-t border-gray-200`}
+              className="border-t border-slate-100"
             >
-              <td className="py-2 px-2 text-sm text-gray-600">{row.price}</td>
-              <td className="py-2 px-4 text-sm text-gray-600 text-right relative">
+              <td className="py-2.5 px-2 text-sm text-slate-700 font-medium">{row.price}</td>
+              <td className="py-2.5 px-4 text-sm text-slate-600 text-right">
                 <span className="relative z-10">{row.qty}</span>
               </td>
             </tr>

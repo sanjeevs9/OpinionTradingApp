@@ -6,12 +6,10 @@ interface Buttons {
 
 export const Button = ({ text, price, customClasses }: Buttons) => {
   return (
-    <>
-      <button
-        className={`min-w-32 rounded text-sm font-semibold p-2 px-8 cursor-pointer ${customClasses}`}
-      >
-        {text} ₹{price}
-      </button>
-    </>
+    <button
+      className={`min-w-[120px] rounded-lg text-sm font-semibold py-2.5 px-6 cursor-pointer transition-all hover:opacity-90 active:scale-[0.98] ${customClasses}`}
+    >
+      {text} ₹{price}
+    </button>
   );
 };

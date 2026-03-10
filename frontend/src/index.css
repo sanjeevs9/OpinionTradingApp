@@ -1,36 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.work-sans {
-  font-family: 'Work Sans', sans-serif;
+:root {
+  --color-yes: #2563EB;
+  --color-yes-light: #EFF6FF;
+  --color-yes-mid: #DBEAFE;
+  --color-no: #E11D48;
+  --color-no-light: #FFF1F2;
+  --color-no-mid: #FFE4E6;
+  --color-surface: #FFFFFF;
+  --color-bg: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-text: #0F172A;
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
 }
 
-.custom-checkbox {
-  display: inline-block;
-  position: relative;
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.custom-checkbox:checked::before {
-  content: '✔';           /* Unicode for the checkmark symbol */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.75rem;
-  color: white;  
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
+.font-display {
+  font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif;
+}
 
 .scrollbar-hide {
-    -ms-overflow-style: none;  
-    scrollbar-width: none; 
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; 
-  }
-
-
-  
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
