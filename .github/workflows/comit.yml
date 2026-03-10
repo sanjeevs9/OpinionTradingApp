@@ -6,38 +6,67 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build
+  detect-changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        backend: [api-backend, engine, web-socket]
-
+    outputs:
+      api: ${{ steps.changes.outputs.api }}
+      engine: ${{ steps.changes.outputs.engine }}
+      websocket: ${{ steps.changes.outputs.websocket }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Check changed files
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          echo "api=$(echo "$CHANGED" | grep -q '^api-backend/' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "engine=$(echo "$CHANGED" | grep -q '^engine/' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "websocket=$(echo "$CHANGED" | grep -q '^web-socket/' && echo true || echo false)" >> $GITHUB_OUTPUT
+
+  build-api:
+    name: Build API
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - run: cd api-backend && npm install && npm run build
 
-      - name: Install dependencies
-        run: |
-          cd ${{ matrix.backend }}
-          npm install
+  build-engine:
+    name: Build Engine
+    needs: detect-changes
+    if: needs.detect-changes.outputs.engine == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: cd engine && npm install && npm run build
 
-      - name: Run build command
-        run: |
-          cd ${{ matrix.backend }}
-          npm run build
+  build-websocket:
+    name: Build WebSocket
+    needs: detect-changes
+    if: needs.detect-changes.outputs.websocket == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: cd web-socket && npm install && npm run build
 
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
-    needs: build
-
+    needs: [detect-changes, build-api, build-engine, build-websocket]
+    if: always() && (needs.detect-changes.outputs.api == 'true' || needs.detect-changes.outputs.engine == 'true' || needs.detect-changes.outputs.websocket == 'true')
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
@@ -49,20 +78,22 @@ jobs:
             cd /home/ec2-user/OpinionTradingApp
             git pull origin main
 
-            cd engine
-            npm install
-            npm run build
-            cd ..
+            if [ "${{ needs.detect-changes.outputs.api }}" = "true" ]; then
+              echo "Deploying api-backend..."
+              cd api-backend && npm install && npm run build && cd ..
+              pm2 restart api-backend
+            fi
 
-            cd api-backend
-            npm install
-            npm run build
-            cd ..
+            if [ "${{ needs.detect-changes.outputs.engine }}" = "true" ]; then
+              echo "Deploying engine..."
+              cd engine && npm install && npm run build && cd ..
+              pm2 restart engine
+            fi
 
-            cd web-socket
-            npm install
-            npm run build
-            cd ..
+            if [ "${{ needs.detect-changes.outputs.websocket }}" = "true" ]; then
+              echo "Deploying web-socket..."
+              cd web-socket && npm install && npm run build && cd ..
+              pm2 restart websocket
+            fi
 
-            pm2 restart all
             pm2 save
