@@ -1,5 +1,6 @@
 import {WebSocketServer,WebSocket} from "ws"
 import {createClient} from "redis"
+import { startBot, stopBot } from "./bot"
 
 const subscriber=createClient();
 subscriber.connect()
@@ -44,6 +45,11 @@ wss.on("connection",function connection(socket){
             }
             subscribedFolks[stockName].add(socket);
 
+            // Start trading bot when first user subscribes to this symbol
+            if(subscribedFolks[stockName].size===1){
+                startBot(stockName);
+            }
+
         }else if(eventType==="unsubscribe"){
             if(subscribedFolks[stockName] && subscribedFolks[stockName].has(socket)){
                 console.log("unsubscribe from", stockName);
@@ -51,6 +57,7 @@ wss.on("connection",function connection(socket){
                 if(subscribedFolks[stockName].size===0){
                     subscriber.unsubscribe(stockName);
                     delete subscribedFolks[stockName];
+                    stopBot(stockName);
                 }
             }
         }
@@ -66,6 +73,7 @@ wss.on("connection",function connection(socket){
                 if(subscribedFolks[stockName].size===0){
                     subscriber.unsubscribe(stockName);
                     delete subscribedFolks[stockName];
+                    stopBot(stockName);
                 }
             }
         }

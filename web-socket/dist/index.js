@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
 const redis_1 = require("redis");
+const bot_1 = require("./bot");
 const subscriber = (0, redis_1.createClient)();
 subscriber.connect();
 const wss = new ws_1.WebSocketServer({ port: 8080 });
@@ -44,6 +45,10 @@ wss.on("connection", function connection(socket) {
                     });
                 }
                 subscribedFolks[stockName].add(socket);
+                // Start trading bot when first user subscribes to this symbol
+                if (subscribedFolks[stockName].size === 1) {
+                    (0, bot_1.startBot)(stockName);
+                }
             }
             else if (eventType === "unsubscribe") {
                 if (subscribedFolks[stockName] && subscribedFolks[stockName].has(socket)) {
@@ -52,6 +57,7 @@ wss.on("connection", function connection(socket) {
                     if (subscribedFolks[stockName].size === 0) {
                         subscriber.unsubscribe(stockName);
                         delete subscribedFolks[stockName];
+                        (0, bot_1.stopBot)(stockName);
                     }
                 }
             }
@@ -66,6 +72,7 @@ wss.on("connection", function connection(socket) {
                 if (subscribedFolks[stockName].size === 0) {
                     subscriber.unsubscribe(stockName);
                     delete subscribedFolks[stockName];
+                    (0, bot_1.stopBot)(stockName);
                 }
             }
         }
