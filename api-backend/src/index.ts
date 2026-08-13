@@ -5,7 +5,7 @@ import post from "./router/post"
 import { Request,Response } from "express";
 import cors from "cors"
 const app=express();
-const PORT=3000;
+const PORT=Number(process.env.PORT)||3000;
 app.use(express.json())
 
 app.use(cors({origin:"*"}));
